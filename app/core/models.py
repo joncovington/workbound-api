@@ -12,6 +12,10 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     date_joined = models.DateTimeField(default=timezone.now)
 
+    class Meta:
+        verbose_name_plural = "Users"
+        verbose_name = "User"
+
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
