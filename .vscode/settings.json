@@ -6,5 +6,9 @@
         "--ignore=E402,F841,F401,E302,E305",
     ],
     "python.linting.enabled": true,
-    "python.formatting.provider": "black"
+    "python.formatting.provider": "black",
+    "python.analysis.extraPaths": [
+        "./app"
+    ],
+    // "python.analysis.useImportHeuristic": true
 }

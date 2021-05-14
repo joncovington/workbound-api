@@ -3,7 +3,7 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
-from .managers import CustomUserManager
+from core.managers import CustomUserManager
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
