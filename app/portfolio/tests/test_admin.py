@@ -12,9 +12,14 @@ class TestPortfolioAdmin(TestCase):
             email='super@workbound.info',
             password='superpass123'
         )
+        self.user = get_user_model().objects.create_user(
+            email='test@workbound.info',
+            password='testpass123'
+        )
         self.client.force_login(self.admin_user)
         self.portfolio = Portfolio.objects.create(
-            reference='TEST123'
+            reference='TEST123',
+            user=self.user
         )
 
     def test_portfolios_listed(self):
