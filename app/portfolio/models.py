@@ -10,8 +10,8 @@ class Portfolio(models.Model):
     portfolio_id = models.CharField(max_length=50, unique=True, editable=False)
     reference = models.CharField(max_length=255)
     created = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey(User, models.CASCADE)
-    completed = models.DateTimeField(null=True, blank=True)
+    created_by = models.ForeignKey(User, models.CASCADE)
+    completed = models.DateTimeField(null=True, blank=True, editable=False)
 
     def save(self, *args, **kwargs):
         if not self.portfolio_id:
@@ -30,7 +30,7 @@ class SectionCategory(models.Model):
     description = models.CharField(max_length=255)
     created = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, models.CASCADE)
-    archived = models.DateTimeField(null=True)
+    archived = models.DateTimeField(null=True, blank=True, editable=False)
 
     class Meta:
         verbose_name_plural = 'Section Categories'
@@ -39,7 +39,7 @@ class SectionCategory(models.Model):
         return self.name
 
     def __repr__(self):
-        return f'<Portfolio> {self.name}'
+        return f'<Section Category> {self.name}'
 
 
 class Section(models.Model):
@@ -47,7 +47,8 @@ class Section(models.Model):
     portfolio = models.ForeignKey(Portfolio, models.DO_NOTHING)
     category = models.ForeignKey(SectionCategory, models.DO_NOTHING)
     created = models.DateTimeField(auto_now_add=True)
-    completed = models.DateTimeField(null=True, blank=True)
+    created_by = models.ForeignKey(User, models.CASCADE)
+    completed = models.DateTimeField(null=True, blank=True, editable=False)
 
     def save(self, *args, **kwargs):
         if not self.section_id:

@@ -43,11 +43,11 @@ class PrivatePortfolioApiTests(TestCase):
         """Test retrieving portfolios with correct permissions"""
         Portfolio.objects.create(
             reference='TEST_Portfolio_123',
-            user=self.user,
+            created_by=self.user,
         )
         Portfolio.objects.create(
             reference='Second_PORTFOLIO|777',
-            user=self.user,
+            created_by=self.user,
         )
         # add view permission for portfolios
         permission = Permission.objects.get(name='Can view portfolio')
@@ -66,11 +66,11 @@ class PrivatePortfolioApiTests(TestCase):
         """Test retrieving portfolios without correct permissions"""
         Portfolio.objects.create(
             reference='TEST_Portfolio_123',
-            user=self.user,
+            created_by=self.user,
         )
         Portfolio.objects.create(
             reference='Second_PORTFOLIO|777',
-            user=self.user,
+            created_by=self.user,
         )
 
         res = self.client.get(PORTFOLIO_URL)
@@ -80,7 +80,7 @@ class PrivatePortfolioApiTests(TestCase):
 
     def test_create_portfolio_successful(self):
         """Test creating new portfolio successful"""
-        payload = {'reference': 'BrandNewPortfolio-000', 'user': self.user.id}
+        payload = {'reference': 'BrandNewPortfolio-000', 'created_by': self.user.id}
 
         permission = Permission.objects.get(name='Can add portfolio')
         self.user.user_permissions.add(permission)
@@ -94,7 +94,7 @@ class PrivatePortfolioApiTests(TestCase):
 
     def test_create_portfolio_invalid(self):
         """Test creating new portfolio with invalid data"""
-        payload = {'reference': '', 'user': self.user.id}
+        payload = {'reference': '', 'created_by': self.user.id}
 
         permission = Permission.objects.get(name='Can add portfolio')
         self.user.user_permissions.add(permission)

@@ -29,4 +29,4 @@ class PortfolioViewSet(viewsets.GenericViewSet,
     serializer_class = PortfolioSerializer
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        serializer.save(created_by=self.request.user)

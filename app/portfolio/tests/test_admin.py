@@ -19,7 +19,7 @@ class TestPortfolioAdmin(TestCase):
         self.client.force_login(self.admin_user)
         self.portfolio = Portfolio.objects.create(
             reference='TEST123',
-            user=self.user
+            created_by=self.user
         )
 
     def test_portfolios_listed(self):

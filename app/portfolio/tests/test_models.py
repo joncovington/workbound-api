@@ -14,7 +14,7 @@ class TestPortfolioModels(TestCase):
     def test_create_portfolio(self):
         new_portfolio = Portfolio.objects.create(
             reference='TEST123',
-            user=self.user
+            created_by=self.user
         )
         self.assertEqual(new_portfolio.reference, 'TEST123')
         self.assertEqual(bool(new_portfolio.completed), False)
@@ -23,7 +23,7 @@ class TestPortfolioModels(TestCase):
     def test_portfolio_str_representation(self):
         new_portfolio = Portfolio.objects.create(
             reference='TEST123',
-            user=self.user
+            created_by=self.user
         )
         self.assertEqual(str(new_portfolio), new_portfolio.portfolio_id)
 
@@ -52,7 +52,7 @@ class TestSectionModels(TestCase):
         """Test Section __str__"""
         new_portfolio = Portfolio.objects.create(
             reference='TEST123',
-            user=self.user
+            created_by=self.user
         )
         sectioncategory = SectionCategory.objects.create(
             name='Section Category One',
@@ -61,7 +61,8 @@ class TestSectionModels(TestCase):
         )
         section = Section.objects.create(
             category=sectioncategory,
-            portfolio=new_portfolio
+            portfolio=new_portfolio,
+            created_by=self.user
         )
 
         self.assertEqual(bool(section.completed), False)
