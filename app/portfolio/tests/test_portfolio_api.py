@@ -102,3 +102,11 @@ class PrivatePortfolioApiTests(TestCase):
         res = self.client.post(PORTFOLIO_URL, payload)
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_portfolio_invalid_permissions(self):
+        """Test creating new portfolio with invalid permissions"""
+        payload = {'reference': 'BrandNewPortfolio-000', 'user': self.user.id}
+
+        res = self.client.post(PORTFOLIO_URL, payload)
+
+        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)

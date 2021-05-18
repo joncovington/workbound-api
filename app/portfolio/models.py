@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -12,3 +13,8 @@ class Portfolio(models.Model):
 
     def __str__(self) -> str:
         return self.reference
+
+    def __repr__(self):
+        return f'<Portfolio> {self.reference} | User: {self.user.email} | Created: {timezone.localtime(self.created)}'
+
+
