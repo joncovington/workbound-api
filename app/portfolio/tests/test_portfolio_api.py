@@ -1,3 +1,5 @@
+import json
+
 from django.test import TestCase
 from django.contrib.auth.models import Permission
 from django.urls import reverse
@@ -110,3 +112,19 @@ class PrivatePortfolioApiTests(TestCase):
         res = self.client.post(PORTFOLIO_URL, payload)
 
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_create_portfolio_successful_with_metadata(self):
+        """Test creating new portfolio successful with metadata"""
+        meta = {'firstkey': 'firstvalue', 'secondkey': 'secondvalue'}
+
+        payload = {
+            'reference': 'BrandNewPortfolio-000',
+            'created_by': self.user.id,
+            'meta': json.dumps(meta)
+        }
+
+        permission = Permission.objects.get(name='Can add portfolio')
+        self.user.user_permissions.add(permission)
+
+        res = self.client.post(PORTFOLIO_URL, payload)
+        self.assertEqual(res.data['meta'], meta)

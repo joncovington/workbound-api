@@ -67,4 +67,4 @@ class TestSectionModels(TestCase):
 
         self.assertEqual(bool(section.completed), False)
         self.assertIsNotNone(section.created)
-        self.assertEqual(str(section), f'{new_portfolio.portfolio_id} {sectioncategory.name}')
+        self.assertEqual(str(section), f'{section.section_id} {sectioncategory.name}')
