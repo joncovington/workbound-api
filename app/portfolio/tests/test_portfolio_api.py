@@ -78,7 +78,7 @@ class PrivatePortfolioApiTests(TestCase):
         res = self.client.get(PORTFOLIO_URL)
 
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertEqual(res.data['detail'], NO_PERMISSION['detail'])
+        self.assertEqual(res.data, NO_PERMISSION)
 
     def test_create_portfolio_successful(self):
         """Test creating new portfolio successful"""
@@ -127,4 +127,5 @@ class PrivatePortfolioApiTests(TestCase):
         self.user.user_permissions.add(permission)
 
         res = self.client.post(PORTFOLIO_URL, payload)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         self.assertEqual(res.data['meta'], meta)
