@@ -7,16 +7,21 @@ User = get_user_model()
 
 
 class Portfolio(models.Model):
+    PREFIX = 'prt_'
+
     portfolio_id = models.CharField(max_length=50, unique=True, editable=False)
-    reference = models.CharField(max_length=255)
-    created = models.DateTimeField(auto_now_add=True)
+    reference = models.CharField(null=True, blank=True, max_length=255)
+    created = models.DateTimeField(auto_now_add=True, editable=False)
     created_by = models.ForeignKey(User, models.CASCADE)
     completed = models.DateTimeField(null=True, blank=True, editable=False)
     meta = models.JSONField(null=True, blank=True)
 
     def save(self, *args, **kwargs):
         if not self.portfolio_id:
-            self.portfolio_id = make_id('FOLIO')
+            new_id = make_id()
+            self.portfolio_id = self.PREFIX + new_id
+            if not self.reference:
+                self.reference = new_id
         return super(Portfolio, self).save(*args, **kwargs)
 
     def __str__(self) -> str:
@@ -27,9 +32,9 @@ class Portfolio(models.Model):
 
 
 class SectionCategory(models.Model):
-    name = models.CharField(max_length=80)
-    description = models.CharField(max_length=255)
-    created = models.DateTimeField(auto_now_add=True)
+    title = models.CharField(max_length=80)
+    description = models.CharField(blank=True, max_length=255)
+    created = models.DateTimeField(auto_now_add=True, editable=False)
     created_by = models.ForeignKey(User, models.CASCADE)
     archived = models.DateTimeField(null=True, blank=True, editable=False)
 
@@ -37,27 +42,31 @@ class SectionCategory(models.Model):
         verbose_name_plural = 'Section Categories'
 
     def __str__(self) -> str:
-        return self.name
+        return self.title
 
     def __repr__(self):
-        return f'<Section Category> {self.name}'
+        return f'<Section Category> {self.title}'
 
 
 class Section(models.Model):
+    PREFIX = 'sct_'
+
     section_id = models.CharField(max_length=50, unique=True, editable=False)
     portfolio = models.ForeignKey(Portfolio, models.DO_NOTHING, related_name='sections')
     category = models.ForeignKey(SectionCategory, models.DO_NOTHING)
-    created = models.DateTimeField(auto_now_add=True)
+    created = models.DateTimeField(auto_now_add=True, editable=False)
     created_by = models.ForeignKey(User, models.CASCADE)
     completed = models.DateTimeField(null=True, blank=True, editable=False)
+    meta = models.JSONField(null=True, blank=True)
 
     def save(self, *args, **kwargs):
         if not self.section_id:
-            self.section_id = make_id('SECTION')
+            new_id = make_id()
+            self.section_id = self.PREFIX + new_id
         return super(Section, self).save(*args, **kwargs)
 
     def __str__(self) -> str:
-        return f'{self.section_id} {self.category.name}'
+        return f'{self.section_id} {self.category.title}'
 
     def __repr__(self):
         return f'<Section> {self.section_id} {self.portfolio.portfolio_id}'

@@ -39,14 +39,14 @@ class TestSectionModels(TestCase):
     def test_section_category_str(self):
         """Test Section Category __str__"""
         sectioncategory = SectionCategory.objects.create(
-            name='Section Category One',
+            title='Section Category One',
             description='Test description goes here',
             created_by=self.user
         )
 
         self.assertEqual(bool(sectioncategory.archived), False)
         self.assertIsNotNone(sectioncategory.created)
-        self.assertEqual(str(sectioncategory), sectioncategory.name)
+        self.assertEqual(str(sectioncategory), sectioncategory.title)
 
     def test_section_str(self):
         """Test Section __str__"""
@@ -55,7 +55,7 @@ class TestSectionModels(TestCase):
             created_by=self.user
         )
         sectioncategory = SectionCategory.objects.create(
-            name='Section Category One',
+            title='Section Category One',
             description='Test description goes here',
             created_by=self.user
         )
@@ -67,4 +67,4 @@ class TestSectionModels(TestCase):
 
         self.assertEqual(bool(section.completed), False)
         self.assertIsNotNone(section.created)
-        self.assertEqual(str(section), f'{section.section_id} {sectioncategory.name}')
+        self.assertEqual(str(section), f'{section.section_id} {sectioncategory.title}')

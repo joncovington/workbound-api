@@ -45,7 +45,7 @@ class PrivateRoleApiTests(TestCase):
         )
         self.client.force_authenticate(user=self.user)
 
-        SectionCategory.objects.create(name='department', description='', created_by=self.user)
+        SectionCategory.objects.create(title='department', description='', created_by=self.user)
 
     def test_retrieve_roles_with_permissions(self):
         """Test retrieving roles while user has permissions"""
@@ -54,7 +54,7 @@ class PrivateRoleApiTests(TestCase):
 
         Role.objects.create(
             user=self.user,
-            category=SectionCategory.objects.create(name='department 1',
+            category=SectionCategory.objects.create(title='department 1',
                                                     description='',
                                                     created_by=self.user
                                                     ),
@@ -64,7 +64,7 @@ class PrivateRoleApiTests(TestCase):
             user=get_user_model().objects.create(email='another@workbound.info',
                                                  password='testpass222',
                                                  ),
-            category=SectionCategory.objects.create(name='department 2',
+            category=SectionCategory.objects.create(title='department 2',
                                                     description='',
                                                     created_by=self.user,
                                                     ),
@@ -84,7 +84,7 @@ class PrivateRoleApiTests(TestCase):
         """Test retrieving roles while user doesn't have permissions"""
         Role.objects.create(
             user=self.user,
-            category=SectionCategory.objects.create(name='department 1',
+            category=SectionCategory.objects.create(title='department 1',
                                                     description='',
                                                     created_by=self.user
                                                     ),
@@ -94,7 +94,7 @@ class PrivateRoleApiTests(TestCase):
             user=get_user_model().objects.create(email='another@workbound.info',
                                                  password='testpass222',
                                                  ),
-            category=SectionCategory.objects.create(name='department 2',
+            category=SectionCategory.objects.create(title='department 2',
                                                     description='',
                                                     created_by=self.user,
                                                     ),
@@ -113,7 +113,7 @@ class PrivateRoleApiTests(TestCase):
             password='testpass222',
         )
         category = SectionCategory.objects.create(
-            name='department 1',
+            title='department 1',
             description='sfasdf',
             created_by=self.user,
         )
@@ -140,7 +140,7 @@ class PrivateRoleApiTests(TestCase):
             password='testpass222',
         )
         category = SectionCategory.objects.create(
-            name='department 1',
+            title='department 1',
             description='asdfasdf',
             created_by=self.user,
         )

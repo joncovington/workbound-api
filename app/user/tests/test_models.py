@@ -22,7 +22,7 @@ class TestUserModels(TestCase):
     def test_add_user_to_role(self):
         """Test adding user to a role within a section category"""
         user = get_user_model().objects.create_user('test@workbound.info', 'testpass123')
-        department = SectionCategory.objects.create(name='Test department', description='', created_by=user)
+        department = SectionCategory.objects.create(title='Test department', description='', created_by=user)
         role_type = RoleType.objects.get(name='User')
         Role.objects.create(user=user, category=department, role_type=role_type)
         test_role = Role.objects.filter(user=user)
