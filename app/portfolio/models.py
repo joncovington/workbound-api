@@ -11,9 +11,9 @@ class Portfolio(models.Model):
 
     portfolio_id = models.CharField(max_length=50, unique=True, editable=False)
     reference = models.CharField(null=True, blank=True, max_length=255)
-    created = models.DateTimeField(auto_now_add=True, editable=False)
+    created = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, models.CASCADE)
-    completed = models.DateTimeField(null=True, blank=True, editable=False)
+    completed = models.DateTimeField(null=True, blank=True)
     meta = models.JSONField(null=True, blank=True)
 
     def save(self, *args, **kwargs):
@@ -58,6 +58,10 @@ class Section(models.Model):
     created_by = models.ForeignKey(User, models.CASCADE)
     completed = models.DateTimeField(null=True, blank=True, editable=False)
     meta = models.JSONField(null=True, blank=True)
+
+    @property
+    def workitem_count(self):
+        return len(self.workitems.all())
 
     def save(self, *args, **kwargs):
         if not self.section_id:
