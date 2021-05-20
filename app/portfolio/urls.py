@@ -7,7 +7,7 @@ app_name = 'portfolio'
 
 router = DefaultRouter()
 router.register('portfolio/', views.PortfolioViewSet)
-router.register('sections/', views.SectionViewSet)
+router.register('section/', views.SectionViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
