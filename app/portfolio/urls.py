@@ -9,6 +9,7 @@ router = DefaultRouter()
 router.register('portfolio/', views.PortfolioViewSet)
 router.register('section/', views.SectionViewSet)
 router.register('section/category/', views.SectionCategoryViewSet)
+router.register('task', views.TaskViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),

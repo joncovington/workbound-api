@@ -87,12 +87,12 @@ class PrivateSectionApiTests(TestCase):
 
         res = self.client.get(SECTIONCATEGORY_URL)
 
-        section_qs = SectionCategory.objects.all()
-        serializer = SectionCategorySerializer(section_qs, many=True)
+        sectioncat_qs = SectionCategory.objects.all()
+        serializer = SectionCategorySerializer(sectioncat_qs, many=True)
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
-        self.assertEqual(len(res.data), len(section_qs))
+        self.assertEqual(len(res.data), len(sectioncat_qs))
         self.assertTrue(len(categories))
 
     def test_retrieve_sectioncategory_without_permissions(self):

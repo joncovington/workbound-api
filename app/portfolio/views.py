@@ -2,8 +2,12 @@ from rest_framework import viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
-from portfolio.models import Portfolio, Section, SectionCategory
-from portfolio.serializers import PortfolioSerializer, SectionSerializer, SectionCategorySerializer
+from portfolio.models import Portfolio, Section, SectionCategory, Task
+from portfolio.serializers import (PortfolioSerializer,
+                                   SectionSerializer,
+                                   SectionCategorySerializer,
+                                   TaskSerializer
+                                   )
 from portfolio.permissions import CustomDjangoModelPermissions
 
 
@@ -38,6 +42,18 @@ class SectionCategoryViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated, CustomDjangoModelPermissions)
     queryset = SectionCategory.objects.all()
     serializer_class = SectionCategorySerializer
+
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user)
+
+
+class TaskViewSet(viewsets.ModelViewSet):
+    """Manage Tasks in the database"""
+
+    authentication_classes = (TokenAuthentication, )
+    permission_classes = (IsAuthenticated, CustomDjangoModelPermissions)
+    queryset = Task.objects.all()
+    serializer_class = TaskSerializer
 
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)

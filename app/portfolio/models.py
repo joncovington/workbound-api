@@ -81,10 +81,9 @@ class Task(models.Model):
 
     title = models.CharField(max_length=50)
     description = models.CharField(max_length=255)
-    created = models.DateTimeField(auto_now_add=True, editable=False)
-    created_by = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, blank=True)
     duration = models.PositiveSmallIntegerField(help_text='Typical duration of this task')
     created = models.DateTimeField(auto_now_add=True, editable=False)
+    created_by = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, blank=True)
     archived = models.DateTimeField(null=True, blank=True)
 
     class Meta:
