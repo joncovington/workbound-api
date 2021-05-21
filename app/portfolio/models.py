@@ -16,6 +16,12 @@ class Portfolio(models.Model):
     completed = models.DateTimeField(null=True, blank=True)
     meta = models.JSONField(null=True, blank=True)
 
+    class Meta:
+        """Meta definition for Task."""
+
+        verbose_name = 'Portfolio'
+        verbose_name_plural = 'Portfolios'
+
     def save(self, *args, **kwargs):
         if not self.portfolio_id:
             new_id = make_id()

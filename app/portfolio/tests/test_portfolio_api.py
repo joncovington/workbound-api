@@ -68,7 +68,7 @@ class PrivatePortfolioApiTests(TestCase):
         portfolios = [sample_portfolio() for i in range(2)]
 
         # add view permission for portfolios
-        permission = Permission.objects.get(name='Can view portfolio')
+        permission = Permission.objects.get(name='Can view Portfolio')
         self.user.user_permissions.add(permission)
 
         res = self.client.get(PORTFOLIO_URL)
@@ -96,7 +96,7 @@ class PrivatePortfolioApiTests(TestCase):
         """Test creating new portfolio successful"""
         payload = {'reference': 'BrandNewPortfolio-000', 'created_by': self.user.id}
 
-        permission = Permission.objects.get(name='Can add portfolio')
+        permission = Permission.objects.get(name='Can add Portfolio')
         self.user.user_permissions.add(permission)
 
         self.client.post(PORTFOLIO_URL, payload)
@@ -124,7 +124,7 @@ class PrivatePortfolioApiTests(TestCase):
             'meta': json.dumps(meta)
         }
 
-        permission = Permission.objects.get(name='Can add portfolio')
+        permission = Permission.objects.get(name='Can add Portfolio')
         self.user.user_permissions.add(permission)
 
         res = self.client.post(PORTFOLIO_URL, payload)
