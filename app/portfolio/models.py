@@ -45,6 +45,8 @@ class SectionCategory(models.Model):
     archived = models.DateTimeField(null=True, blank=True)
 
     class Meta:
+        """Meta definition for Section Category."""
+
         verbose_name = 'Section Category'
         verbose_name_plural = 'Section Categories'
 
@@ -65,6 +67,12 @@ class Section(models.Model):
     created_by = models.ForeignKey(User, models.CASCADE)
     completed = models.DateTimeField(null=True, blank=True, editable=False)
     meta = models.JSONField(null=True, blank=True)
+
+    class Meta:
+        """Meta definition for Section."""
+
+        verbose_name = 'Section'
+        verbose_name_plural = 'Sections'
 
     @property
     def workitem_count(self):

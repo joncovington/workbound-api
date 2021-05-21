@@ -126,7 +126,7 @@ class PrivateSectionApiTests(TestCase):
         sections = [sample_section() for i in range(2)]
 
         # add view permission for sections
-        permission = Permission.objects.get(name='Can view section')
+        permission = Permission.objects.get(name='Can view Section')
         self.user.user_permissions.add(permission)
 
         res = self.client.get(SECTION_URL)
