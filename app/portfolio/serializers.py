@@ -1,7 +1,21 @@
 from rest_framework import serializers
 
-from portfolio.models import Portfolio, Section
+from portfolio.models import Portfolio, Section, SectionCategory
 from user.serializers import UserSerializer
+
+
+class SectionCategorySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = SectionCategory
+        fields = (
+            'title',
+            'description',
+            'created',
+            'created_by',
+            'archived'
+        )
+        read_only_fields = ('created', 'created_by')
 
 
 class SectionSerializer(serializers.ModelSerializer):
@@ -11,7 +25,7 @@ class SectionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Section
-        fields = [
+        fields = (
             'id',
             'section_id',
             'portfolio',
@@ -20,8 +34,8 @@ class SectionSerializer(serializers.ModelSerializer):
             'created_by',
             'meta',
             'completed',
-        ]
-        read_only_fields = ['id', 'section_id', 'created', 'created_by', ]
+        )
+        read_only_fields = ('id', 'section_id', 'created', 'created_by', )
 
 
 class PortfolioSerializer(serializers.ModelSerializer):

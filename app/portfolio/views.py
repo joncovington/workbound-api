@@ -1,28 +1,17 @@
 from rest_framework import viewsets
 from rest_framework.authentication import TokenAuthentication
-from rest_framework.permissions import IsAuthenticated, BasePermission
+from rest_framework.permissions import IsAuthenticated
 
-from portfolio.models import Portfolio, Section
-from portfolio.serializers import PortfolioSerializer, SectionSerializer
-
-
-class PortfolioPermission(BasePermission):
-    def has_permission(self, request, view):
-        if request.method == 'GET':
-            return request.user.has_perm(
-                'portfolio.view_portfolio'
-            )
-        if request.method == 'POST':
-            return request.user.has_perm(
-                'portfolio.add_portfolio'
-            )
+from portfolio.models import Portfolio, Section, SectionCategory
+from portfolio.serializers import PortfolioSerializer, SectionSerializer, SectionCategorySerializer
+from portfolio.permissions import CustomDjangoModelPermissions
 
 
 class PortfolioViewSet(viewsets.ModelViewSet):
     """Manage Portfolios in the database"""
 
     authentication_classes = (TokenAuthentication, )
-    permission_classes = (IsAuthenticated, PortfolioPermission)
+    permission_classes = (IsAuthenticated, CustomDjangoModelPermissions)
     queryset = Portfolio.objects.all()
     serializer_class = PortfolioSerializer
 
@@ -30,25 +19,25 @@ class PortfolioViewSet(viewsets.ModelViewSet):
         serializer.save(created_by=self.request.user)
 
 
-class SectionPermission(BasePermission):
-    def has_permission(self, request, view):
-        if request.method == 'GET':
-            return request.user.has_perm(
-                'portfolio.view_section'
-            )
-        if request.method == 'POST':
-            return request.user.has_perm(
-                'portfolio.add_section'
-            )
-
-
 class SectionViewSet(viewsets.ModelViewSet):
     """Manage Sections in the database"""
 
     authentication_classes = (TokenAuthentication, )
-    permission_classes = (IsAuthenticated, SectionPermission)
+    permission_classes = (IsAuthenticated, CustomDjangoModelPermissions)
     queryset = Section.objects.all()
     serializer_class = SectionSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user)
+
+
+class SectionCategoryViewSet(viewsets.ModelViewSet):
+    """Manage Sections in the database"""
+
+    authentication_classes = (TokenAuthentication, )
+    permission_classes = (IsAuthenticated, CustomDjangoModelPermissions)
+    queryset = SectionCategory.objects.all()
+    serializer_class = SectionCategorySerializer
 
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
