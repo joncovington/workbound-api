@@ -1,7 +1,6 @@
 from rest_framework import serializers
 
 from portfolio.models import Portfolio, Section, SectionCategory, Task
-from user.serializers import UserSerializer
 
 
 class TaskSerializer(serializers.ModelSerializer):
@@ -34,9 +33,6 @@ class SectionCategorySerializer(serializers.ModelSerializer):
 
 
 class SectionSerializer(serializers.ModelSerializer):
-    created_by = UserSerializer(many=False)
-    created = serializers.DateTimeField()
-    completed = serializers.DateTimeField(required=False, allow_null=True)
 
     class Meta:
         model = Section

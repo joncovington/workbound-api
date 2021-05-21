@@ -63,7 +63,7 @@ class Section(models.Model):
     section_id = models.CharField(max_length=50, unique=True, editable=False)
     portfolio = models.ForeignKey(Portfolio, models.DO_NOTHING, related_name='sections')
     category = models.ForeignKey(SectionCategory, models.DO_NOTHING)
-    created = models.DateTimeField(auto_now_add=True, editable=False)
+    created = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, models.CASCADE)
     completed = models.DateTimeField(null=True, blank=True, editable=False)
     meta = models.JSONField(null=True, blank=True)

@@ -149,3 +149,22 @@ class PrivateSectionApiTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(res.data, NO_PERMISSION)
         self.assertTrue(len(sections))
+
+    def test_create_section_with_permission_successful(self):
+        """Test creating new section successful"""
+        portfolio = sample_portfolio()
+        category = sample_sectioncategory()
+        payload = {'portfolio': portfolio.id, 'category': category.id, 'created_by': self.user.id}
+
+        permission = Permission.objects.get(name='Can add Section')
+        self.user.user_permissions.add(permission)
+
+        self.client.post(SECTION_URL, payload)
+
+        exists = Section.objects.filter(
+            portfolio=portfolio,
+            category=category,
+            created_by=self.user
+        ).exists()
+
+        self.assertTrue(exists)
