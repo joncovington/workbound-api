@@ -111,6 +111,9 @@ class Task(models.Model):
         """Unicode representation of Task."""
         return self.title
 
+    def __repr__(self):
+        return f'<Task> {self.title}'
+
 
 class WorkItem(models.Model):
     PREFIX = 'wrk_'
@@ -123,6 +126,12 @@ class WorkItem(models.Model):
     completed = models.DateTimeField(null=True, blank=True, editable=False)
     meta = models.JSONField(null=True, blank=True)
 
+    class Meta:
+        """Meta definition for WorkItem."""
+
+        verbose_name = 'Work Item'
+        verbose_name_plural = 'Work Items'
+
     def save(self, *args, **kwargs):
         if not self.workitem_id:
             new_id = make_id()
@@ -130,6 +139,7 @@ class WorkItem(models.Model):
         return super(WorkItem, self).save(*args, **kwargs)
 
     def __str__(self) -> str:
+        """Unicode representation of WorkItem."""
         return f'{self.workitem_id} {self.task.title}'
 
     def __repr__(self):
