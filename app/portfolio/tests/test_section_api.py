@@ -82,7 +82,7 @@ class PrivateSectionApiTests(TestCase):
         categories = [sample_sectioncategory() for i in range(2)]
 
         # add view permission for section category
-        permission = Permission.objects.get(name='Can view section category')
+        permission = Permission.objects.get(name='Can view Section Category')
         self.user.user_permissions.add(permission)
 
         res = self.client.get(SECTIONCATEGORY_URL)
@@ -110,7 +110,7 @@ class PrivateSectionApiTests(TestCase):
         """Test creating new section category successful"""
         payload = {'title': 'new_category', 'description': 'blah blah blah'}
 
-        permission = Permission.objects.get(name='Can add section category')
+        permission = Permission.objects.get(name='Can add Section Category')
         self.user.user_permissions.add(permission)
 
         self.client.post(SECTIONCATEGORY_URL, payload)

@@ -17,7 +17,7 @@ class Portfolio(models.Model):
     meta = models.JSONField(null=True, blank=True)
 
     class Meta:
-        """Meta definition for Task."""
+        """Meta definition for Portfolio."""
 
         verbose_name = 'Portfolio'
         verbose_name_plural = 'Portfolios'
@@ -45,6 +45,7 @@ class SectionCategory(models.Model):
     archived = models.DateTimeField(null=True, blank=True)
 
     class Meta:
+        verbose_name = 'Section Category'
         verbose_name_plural = 'Section Categories'
 
     def __str__(self) -> str:
