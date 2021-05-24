@@ -125,6 +125,7 @@ class WorkItem(models.Model):
     created_by = models.ForeignKey(User, models.DO_NOTHING, null=True, blank=True)
     completed = models.DateTimeField(null=True, blank=True, editable=False)
     meta = models.JSONField(null=True, blank=True)
+    assigned_to = models.ForeignKey(User, models.DO_NOTHING, null=True, blank=True, related_name='assigned_users')
 
     class Meta:
         """Meta definition for WorkItem."""

@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'core',
     'user',
     'portfolio',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -138,4 +139,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 REST_FRAMEWORK = {
 
     'DATETIME_FORMAT': "%m-%d-%Y %H:%M:%S",
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
+    )
 }
