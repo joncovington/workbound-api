@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from portfolio.models import Portfolio, Section, SectionCategory, Task
+from portfolio.models import Portfolio, Section, SectionCategory, Task, WorkItem
 
 
 class TaskSerializer(serializers.ModelSerializer):
@@ -47,6 +47,24 @@ class SectionSerializer(serializers.ModelSerializer):
             'completed',
         )
         read_only_fields = ('id', 'section_id', 'created', 'created_by', )
+
+
+class WorkItemSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = WorkItem
+        fields = (
+            'id',
+            'workitem_id',
+            'section',
+            'task',
+            'created',
+            'created_by',
+            'meta',
+            'completed',
+        )
+
+        read_only_fields = ('id', 'workitem_id', 'created', 'created_by', )
 
 
 class PortfolioSerializer(serializers.ModelSerializer):

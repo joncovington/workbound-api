@@ -6,7 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from rest_framework.test import APIClient
 from rest_framework import status
-from portfolio.serializers import TaskSerializer
+from portfolio.serializers import TaskSerializer, WorkItemSerializer
 
 from utils.helpers import sample_email, sample_id
 
@@ -16,7 +16,7 @@ from portfolio.tests.test_section_api import sample_section
 NO_PERMISSION = {
     'detail': 'You do not have permission to perform this action.'
 }
-# WORKITEM_URL = reverse('portfolio:workitem-list')
+WORKITEM_URL = reverse('portfolio:workitem-list')
 TASK_URL = reverse('portfolio:task-list')
 
 
@@ -138,6 +138,76 @@ class PrivateWorkItemApiTests(TestCase):
 
         exists = Task.objects.filter(
             title=payload['title']
+        ).exists()
+
+        self.assertFalse(exists)
+        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(res.data, NO_PERMISSION)
+
+# WorkItem tests
+
+    def test_retrieve_workitem_with_permission_successful(self):
+        """Test retrieving WorkItem(s) with correct permissions"""
+
+        workitems = [sample_workitem() for i in range(2)]
+
+        # add view permission for sections
+        permission = Permission.objects.get(name='Can view Work Item')
+        self.user.user_permissions.add(permission)
+
+        res = self.client.get(WORKITEM_URL)
+
+        workitem_qs = WorkItem.objects.all()
+        serializer = WorkItemSerializer(workitem_qs, many=True)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data, serializer.data)
+        self.assertEqual(len(res.data), len(workitem_qs))
+        self.assertTrue(len(workitems))
+
+    def test_retrieve_workitem_without_permission_fails(self):
+        """Test retrieving WorkItem(s) without permissions fails"""
+
+        workitems = [sample_workitem() for i in range(2)]
+
+        res = self.client.get(WORKITEM_URL)
+
+        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(res.data, NO_PERMISSION)
+        self.assertTrue(len(workitems))
+
+    def test_create_workitem_with_permission_successful(self):
+        """Test creating new workitem successful"""
+        section = sample_section()
+        task = sample_task()
+        payload = {'section': section.id, 'task': task.id, 'created_by': self.user.id}
+
+        permission = Permission.objects.get(name='Can add Work Item')
+        self.user.user_permissions.add(permission)
+
+        res = self.client.post(WORKITEM_URL, payload)
+
+        exists = WorkItem.objects.filter(
+            section=section,
+            task=task,
+            created_by=self.user
+        ).exists()
+
+        self.assertTrue(exists)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+
+    def test_create_workitem_without_permission_fails(self):
+        """Test creating new workitem fails without permissions"""
+        section = sample_section()
+        task = sample_task()
+        payload = {'section': section.id, 'task': task.id, 'created_by': self.user.id}
+
+        res = self.client.post(WORKITEM_URL, payload)
+
+        exists = WorkItem.objects.filter(
+            section=section,
+            task=task,
+            created_by=self.user
         ).exists()
 
         self.assertFalse(exists)

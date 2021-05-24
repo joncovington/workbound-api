@@ -177,7 +177,7 @@ class PrivateSectionApiTests(TestCase):
         permission = Permission.objects.get(name='Can add Section')
         self.user.user_permissions.add(permission)
 
-        self.client.post(SECTION_URL, payload)
+        res = self.client.post(SECTION_URL, payload)
 
         exists = Section.objects.filter(
             portfolio=portfolio,
@@ -186,6 +186,7 @@ class PrivateSectionApiTests(TestCase):
         ).exists()
 
         self.assertTrue(exists)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
 
     def test_create_section_without_permission_fails(self):
         """Test creating new section without pemission fails"""
