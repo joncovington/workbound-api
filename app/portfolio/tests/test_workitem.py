@@ -76,6 +76,8 @@ class PrivateWorkItemApiTests(TestCase):
         self.user = _sample_user()
         self.client.force_authenticate(user=self.user)
 
+# Task tests
+
     def test_retrieve_tasks_with_permission(self):
         """Test retrieving tasks with correct permissions"""
 
@@ -106,8 +108,8 @@ class PrivateWorkItemApiTests(TestCase):
         self.assertEqual(res.data, NO_PERMISSION)
         self.assertTrue(len(tasks))
 
-    def test_create_task_successful(self):
-        """Test creating new task successful"""
+    def test_create_task_with_permissions_successful(self):
+        """Test creating new task successful with permissions"""
         payload = {
             'title': 'new_task',
             'description': 'blah blah blah',
@@ -123,3 +125,21 @@ class PrivateWorkItemApiTests(TestCase):
         ).exists()
 
         self.assertTrue(exists)
+
+    def test_create_task_without_permissions_fails(self):
+        """Test creating new task fails without permissions"""
+        payload = {
+            'title': 'new_task',
+            'description': 'blah blah blah',
+            'duration': 1
+        }
+
+        res = self.client.post(TASK_URL, payload)
+
+        exists = Task.objects.filter(
+            title=payload['title']
+        ).exists()
+
+        self.assertFalse(exists)
+        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(res.data, NO_PERMISSION)

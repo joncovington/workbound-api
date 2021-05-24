@@ -76,6 +76,8 @@ class PrivateSectionApiTests(TestCase):
         self.user = _sample_user()
         self.client.force_authenticate(user=self.user)
 
+# SectionCategory Tests
+
     def test_retrieve_sectioncategory_with_permission(self):
         """Test retrieving sections with correct permissions"""
 
@@ -119,6 +121,22 @@ class PrivateSectionApiTests(TestCase):
         ).exists()
 
         self.assertTrue(exists)
+
+    def test_create_sectioncategory_without_permission_fails(self):
+        """Test creating new section category without permissions fails"""
+        payload = {'title': 'new_category', 'description': 'blah blah blah'}
+
+        res = self.client.post(SECTIONCATEGORY_URL, payload)
+
+        exists = SectionCategory.objects.filter(
+            title=payload['title']
+        ).exists()
+
+        self.assertFalse(exists)
+        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(res.data, NO_PERMISSION)
+
+# Section tests
 
     def test_retrieve_sections_with_permission(self):
         """Test retrieving sections with correct permissions"""
