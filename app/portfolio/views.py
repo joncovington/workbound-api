@@ -10,6 +10,7 @@ from portfolio.serializers import (PortfolioSerializer,
                                    WorkItemSerializer
                                    )
 from portfolio.permissions import CustomDjangoModelPermissions
+from portfolio.filters import TaskFilter, SectionCategoryFilter, WorkItemFilter
 
 
 class PortfolioViewSet(viewsets.ModelViewSet):
@@ -43,6 +44,7 @@ class SectionCategoryViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated, CustomDjangoModelPermissions)
     queryset = SectionCategory.objects.all()
     serializer_class = SectionCategorySerializer
+    filterset_class = SectionCategoryFilter
 
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
@@ -55,6 +57,7 @@ class TaskViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated, CustomDjangoModelPermissions)
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
+    filterset_class = TaskFilter
 
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
@@ -67,6 +70,7 @@ class WorkItemViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated, CustomDjangoModelPermissions)
     queryset = WorkItem.objects.all()
     serializer_class = WorkItemSerializer
+    filterset_class = WorkItemFilter
 
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)

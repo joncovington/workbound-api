@@ -43,5 +43,5 @@ class TaskAdmin(admin.ModelAdmin):
 @admin.register(WorkItem)
 class WorkItemAdmin(admin.ModelAdmin):
     ordering = ['-created']
-    list_display = ('workitem_id', 'created', )
+    list_display = ('workitem_id', 'created', 'assigned_to', )
     readonly_fields = ('workitem_id', 'created', 'completed')

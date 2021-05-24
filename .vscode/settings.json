@@ -10,5 +10,6 @@
     "python.analysis.extraPaths": [
         "./app"
     ],
+    "python.linting.pylintEnabled": false,
     // "python.analysis.useImportHeuristic": true
 }

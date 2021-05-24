@@ -180,7 +180,12 @@ class PrivateWorkItemApiTests(TestCase):
         """Test creating new workitem successful"""
         section = sample_section()
         task = sample_task()
-        payload = {'section': section.id, 'task': task.id, 'created_by': self.user.id}
+
+        payload = {
+            'section': section.id,
+            'task': task.id,
+            'created_by': self.user.id
+        }
 
         permission = Permission.objects.get(name='Can add Work Item')
         self.user.user_permissions.add(permission)

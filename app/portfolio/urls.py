@@ -5,7 +5,7 @@ from portfolio import views
 
 app_name = 'portfolio'
 
-router = DefaultRouter()
+router = DefaultRouter(trailing_slash=False)
 router.register('portfolio/', views.PortfolioViewSet)
 router.register('section/', views.SectionViewSet)
 router.register('section/category/', views.SectionCategoryViewSet)
