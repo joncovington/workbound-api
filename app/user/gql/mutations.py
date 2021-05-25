@@ -7,6 +7,7 @@ from user.gql.types import UserType
 
 User = get_user_model()
 
+
 class UserCreate(Mutation):
     user = graphene.Field(UserType)
 

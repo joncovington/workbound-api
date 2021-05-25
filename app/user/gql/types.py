@@ -4,6 +4,7 @@ from graphene_django import DjangoObjectType
 
 User = get_user_model()
 
+
 class UserType(DjangoObjectType):
     class Meta:
         model = User
