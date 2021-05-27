@@ -14,38 +14,7 @@ def _sample_user(email, password):
     return User.objects.create_user(email=email, password=password)
 
 
-class UserMutationTests(GraphQLTestCase):
-
-    def test_retrieve_token_successful(self):
-        """Test obtaining auth token with valid credentials is successful"""
-        user = _sample_user('test@workbound.info', 'TestPass123')
-        gql = """
-              mutation tokenAuth($email: String!, $password: String!){
-                tokenAuth(email: $email, password: $password){
-                token
-                payload
-                }
-              }
-             """
-        response = self.query(gql, variables={'email': user.email, 'password': 'TestPass123'})
-
-        self.assertEqual(response.json()['data']['tokenAuth']['payload']['email'], user.email)
-        self.assertResponseNoErrors(response)
-
-    def test_retrieve_token_bad_credentials_fails(self):
-        """Test obtaining auth token with invalid credentials fails"""
-        user = _sample_user('test@workbound.info', 'TestPass123')
-        gql = """
-              mutation tokenAuth($email: String!, $password: String!){
-                tokenAuth(email: $email, password: $password){
-                token
-                payload
-                }
-              }
-             """
-        response = self.query(gql, variables={'email': user.email, 'password': 'wrongPass'})
-
-        self.assertEqual(response.json()['errors'][0]['message'], BAD_CREDENTIALS)
+class UserQueryTests(GraphQLTestCase):
 
     def test_retreive_current_user_success(self):
         """Test retrieving a user with authorization is successful"""
@@ -78,6 +47,40 @@ class UserMutationTests(GraphQLTestCase):
         response = self.query(gql)
 
         self.assertEqual(response.json()['errors'][0]['message'], NO_PERMISSION)
+
+
+class UserMutationTests(GraphQLTestCase):
+
+    def test_retrieve_token_successful(self):
+        """Test obtaining auth token with valid credentials is successful"""
+        user = _sample_user('test@workbound.info', 'TestPass123')
+        gql = """
+              mutation tokenAuth($email: String!, $password: String!){
+                tokenAuth(email: $email, password: $password){
+                token
+                payload
+                }
+              }
+             """
+        response = self.query(gql, variables={'email': user.email, 'password': 'TestPass123'})
+
+        self.assertEqual(response.json()['data']['tokenAuth']['payload']['email'], user.email)
+        self.assertResponseNoErrors(response)
+
+    def test_retrieve_token_bad_credentials_fails(self):
+        """Test obtaining auth token with invalid credentials fails"""
+        user = _sample_user('test@workbound.info', 'TestPass123')
+        gql = """
+              mutation tokenAuth($email: String!, $password: String!){
+                tokenAuth(email: $email, password: $password){
+                token
+                payload
+                }
+              }
+             """
+        response = self.query(gql, variables={'email': user.email, 'password': 'wrongPass'})
+
+        self.assertEqual(response.json()['errors'][0]['message'], BAD_CREDENTIALS)
 
     def test_create_user_with_permissions_success(self):
         """Test creating a user with correct permissions is successful"""
