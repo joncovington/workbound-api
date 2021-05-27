@@ -3,7 +3,7 @@ import json
 from django.test import TestCase
 from django.contrib.auth.models import Permission
 from django.urls import reverse
-from django.contrib.auth import get_user_model as User
+from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework.test import APIClient
@@ -14,6 +14,9 @@ from portfolio.serializers import PortfolioSerializer
 
 from utils.helpers import sample_id, sample_email
 
+
+User = get_user_model()
+
 NO_PERMISSION = {
     'detail': 'You do not have permission to perform this action.'
 }
@@ -21,13 +24,13 @@ PORTFOLIO_URL = reverse('portfolio:portfolio-list')
 
 
 def _sample_user():
-    return User().objects.create(email=sample_email(), password=sample_id())
+    return User.objects.create_user(email=sample_email(), password=sample_id())
 
 
 def _get_user(**kwargs):
     """Return user from dict if present or return sample user"""
     user = kwargs['user'] if 'user' in kwargs else _sample_user()
-    if not isinstance(user, User()):
+    if not isinstance(user, User):
         raise ValueError(_('User must be an instance of AUTH_USER_MODEL'))
     return user
 

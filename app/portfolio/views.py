@@ -59,9 +59,6 @@ class TaskViewSet(viewsets.ModelViewSet):
     serializer_class = TaskSerializer
     filterset_class = TaskFilter
 
-    def perform_create(self, serializer):
-        serializer.save(created_by=self.request.user)
-
 
 class WorkItemViewSet(viewsets.ModelViewSet):
     """Manage WorkItems in the database"""

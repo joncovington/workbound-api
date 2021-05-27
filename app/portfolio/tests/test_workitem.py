@@ -1,17 +1,20 @@
 from django.test import TestCase
 from django.contrib.auth.models import Permission
 from django.urls import reverse
-from django.contrib.auth import get_user_model as User
+from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework.test import APIClient
 from rest_framework import status
-from portfolio.serializers import TaskSerializer, WorkItemSerializer
 
 from utils.helpers import sample_email, sample_id
 
+from portfolio.serializers import TaskSerializer, WorkItemSerializer
 from portfolio.models import Task, WorkItem
 from portfolio.tests.test_section_api import sample_section
+
+
+User = get_user_model()
 
 NO_PERMISSION = {
     'detail': 'You do not have permission to perform this action.'
@@ -21,13 +24,13 @@ TASK_URL = reverse('portfolio:task-list')
 
 
 def _sample_user():
-    return User().objects.create(email=sample_email(), password=sample_id())
+    return User.objects.create(email=sample_email(), password=sample_id())
 
 
 def _get_user(**kwargs):
     """Return user from dict if present or return sample user"""
     user = kwargs['user'] if 'user' in kwargs else _sample_user()
-    if not isinstance(user, User()):
+    if not isinstance(user, User):
         raise ValueError(_('User must be an instance of AUTH_USER_MODEL'))
     return user
 
@@ -113,9 +116,9 @@ class PrivateWorkItemApiTests(TestCase):
         payload = {
             'title': 'new_task',
             'description': 'blah blah blah',
-            'duration': 1
+            'duration': 1,
+            'created_by': self.user.id
         }
-
         permission = Permission.objects.get(name='Can add Task')
         self.user.user_permissions.add(permission)
 

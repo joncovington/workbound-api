@@ -1,13 +1,14 @@
-import graphene
+from graphene import ObjectType, Schema
 import user.gql.schema as user_gql
+import portfolio.gql.schema as portfolio_gql
 
 
-class Query(user_gql.Query, graphene.ObjectType):
+class Query(portfolio_gql.Query, user_gql.Query, ObjectType):
     pass
 
 
-class Mutation(user_gql.Mutation, graphene.ObjectType):
+class Mutation(portfolio_gql.Mutation, user_gql.Mutation, ObjectType):
     pass
 
 
-schema = graphene.Schema(query=Query, mutation=Mutation)
+schema = Schema(query=Query, mutation=Mutation)
