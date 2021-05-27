@@ -8,7 +8,7 @@ app_name = 'portfolio'
 router = DefaultRouter(trailing_slash=False)
 router.register('portfolio/', views.PortfolioViewSet)
 router.register('section/', views.SectionViewSet)
-router.register('section/category/', views.SectionCategoryViewSet)
+router.register('section/category/', views.CategoryViewSet)
 router.register('task/', views.TaskViewSet)
 router.register('workitem/', views.WorkItemViewSet)
 

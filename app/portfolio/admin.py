@@ -1,5 +1,5 @@
 from django.contrib import admin
-from portfolio.models import Portfolio, SectionCategory, Section, Task, WorkItem
+from portfolio.models import Portfolio, Category, Section, Task, WorkItem
 
 
 @admin.register(Portfolio)
@@ -14,8 +14,8 @@ class PortfolioAdmin(admin.ModelAdmin):
     section_count.short_description = 'sections'
 
 
-@admin.register(SectionCategory)
-class SectionCategoryAdmin(admin.ModelAdmin):
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
     ordering = ['-created']
     list_display = ('title', 'created', 'archived')
     readonly_fields = ('created', 'archived')

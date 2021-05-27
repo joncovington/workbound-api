@@ -6,9 +6,11 @@ from django.urls import reverse
 from rest_framework.test import APIClient
 from rest_framework import status
 
-from portfolio.models import SectionCategory
+from portfolio.models import Category
 from user.models import Role, RoleType
 from user.serializers import RoleSerializer
+
+User = get_user_model()
 
 NO_PERMISSION = {
     'detail': 'You do not have permission to perform this action.'
@@ -39,13 +41,13 @@ class PrivateRoleApiTests(TestCase):
 
     def setUp(self) -> None:
         self.client = APIClient()
-        self.user = get_user_model().objects.create(
+        self.user = User.objects.create_user(
             email='test@workbound.info',
             password='testpass123'
         )
         self.client.force_authenticate(user=self.user)
 
-        SectionCategory.objects.create(title='department', description='', created_by=self.user)
+        Category.objects.create(title='department', description='', created_by=self.user)
 
     def test_retrieve_roles_with_permissions(self):
         """Test retrieving roles while user has permissions"""
@@ -54,20 +56,20 @@ class PrivateRoleApiTests(TestCase):
 
         Role.objects.create(
             user=self.user,
-            category=SectionCategory.objects.create(title='department 1',
-                                                    description='',
-                                                    created_by=self.user
-                                                    ),
+            category=Category.objects.create(title='department 1',
+                                             description='',
+                                             created_by=self.user
+                                             ),
             role_type=RoleType.objects.first()
         )
         Role.objects.create(
-            user=get_user_model().objects.create(email='another@workbound.info',
-                                                 password='testpass222',
-                                                 ),
-            category=SectionCategory.objects.create(title='department 2',
-                                                    description='',
-                                                    created_by=self.user,
-                                                    ),
+            user=User.objects.create_user(email='another@workbound.info',
+                                          password='testpass222',
+                                          ),
+            category=Category.objects.create(title='department 2',
+                                             description='',
+                                             created_by=self.user,
+                                             ),
             role_type=RoleType.objects.last()
         )
 
@@ -84,20 +86,20 @@ class PrivateRoleApiTests(TestCase):
         """Test retrieving roles while user doesn't have permissions"""
         Role.objects.create(
             user=self.user,
-            category=SectionCategory.objects.create(title='department 1',
-                                                    description='',
-                                                    created_by=self.user
-                                                    ),
+            category=Category.objects.create(title='department 1',
+                                             description='',
+                                             created_by=self.user
+                                             ),
             role_type=RoleType.objects.first()
         )
         Role.objects.create(
-            user=get_user_model().objects.create(email='another@workbound.info',
-                                                 password='testpass222',
-                                                 ),
-            category=SectionCategory.objects.create(title='department 2',
-                                                    description='',
-                                                    created_by=self.user,
-                                                    ),
+            user=User.objects.create_user(email='another@workbound.info',
+                                          password='testpass222',
+                                          ),
+            category=Category.objects.create(title='department 2',
+                                             description='',
+                                             created_by=self.user,
+                                             ),
             role_type=RoleType.objects.last()
         )
 
@@ -108,11 +110,11 @@ class PrivateRoleApiTests(TestCase):
 
     def test_create_role_successful_with_permission(self):
         """Test creating new role successful when user has permission"""
-        user = get_user_model().objects.create(
+        user = User.objects.create_user(
             email='another@workbound.info',
             password='testpass222',
         )
-        category = SectionCategory.objects.create(
+        category = Category.objects.create(
             title='department 1',
             description='sfasdf',
             created_by=self.user,
@@ -135,11 +137,11 @@ class PrivateRoleApiTests(TestCase):
 
     def test_create_role_fails_without_permission(self):
         """Test creating new role fails when user doesn't have permission"""
-        user = get_user_model().objects.create(
+        user = User.objects.create_user(
             email='another@workbound.info',
             password='testpass222',
         )
-        category = SectionCategory.objects.create(
+        category = Category.objects.create(
             title='department 1',
             description='asdfasdf',
             created_by=self.user,

@@ -2,15 +2,15 @@ from rest_framework import viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
-from portfolio.models import Portfolio, Section, SectionCategory, Task, WorkItem
+from portfolio.models import Portfolio, Section, Category, Task, WorkItem
 from portfolio.serializers import (PortfolioSerializer,
                                    SectionSerializer,
-                                   SectionCategorySerializer,
+                                   CategorySerializer,
                                    TaskSerializer,
                                    WorkItemSerializer
                                    )
 from portfolio.permissions import CustomDjangoModelPermissions
-from portfolio.filters import TaskFilter, SectionCategoryFilter, WorkItemFilter
+from portfolio.filters import TaskFilter, CategoryFilter, WorkItemFilter
 
 
 class PortfolioViewSet(viewsets.ModelViewSet):
@@ -37,14 +37,14 @@ class SectionViewSet(viewsets.ModelViewSet):
         serializer.save(created_by=self.request.user)
 
 
-class SectionCategoryViewSet(viewsets.ModelViewSet):
+class CategoryViewSet(viewsets.ModelViewSet):
     """Manage Sections in the database"""
 
     authentication_classes = (TokenAuthentication, )
     permission_classes = (IsAuthenticated, CustomDjangoModelPermissions)
-    queryset = SectionCategory.objects.all()
-    serializer_class = SectionCategorySerializer
-    filterset_class = SectionCategoryFilter
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    filterset_class = CategoryFilter
 
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)

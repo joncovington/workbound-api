@@ -78,7 +78,7 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name='SectionCategory',
+            name='Category',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('title', models.CharField(max_length=80)),
@@ -88,14 +88,14 @@ class Migration(migrations.Migration):
                 ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL)),
             ],
             options={
-                'verbose_name': 'Section Category',
-                'verbose_name_plural': 'Section Categories',
+                'verbose_name': 'Category',
+                'verbose_name_plural': 'Categories',
             },
         ),
         migrations.AddField(
             model_name='section',
             name='category',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to='portfolio.sectioncategory'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to='portfolio.category'),
         ),
         migrations.AddField(
             model_name='section',

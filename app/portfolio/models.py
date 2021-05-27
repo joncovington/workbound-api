@@ -37,7 +37,7 @@ class Portfolio(models.Model):
         return f'<Portfolio> {self.id} | User: {self.user.email} | Reference: {self.reference}'
 
 
-class SectionCategory(models.Model):
+class Category(models.Model):
     title = models.CharField(max_length=80)
     description = models.CharField(blank=True, max_length=255)
     created = models.DateTimeField(auto_now_add=True, editable=False)
@@ -45,16 +45,16 @@ class SectionCategory(models.Model):
     archived = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        """Meta definition for Section Category."""
+        """Meta definition for Category."""
 
-        verbose_name = 'Section Category'
-        verbose_name_plural = 'Section Categories'
+        verbose_name = 'Category'
+        verbose_name_plural = 'Categories'
 
     def __str__(self) -> str:
         return self.title
 
     def __repr__(self):
-        return f'<Section Category> {self.title}'
+        return f'<Category> {self.title}'
 
 
 class Section(models.Model):
@@ -62,7 +62,7 @@ class Section(models.Model):
 
     section_id = models.CharField(max_length=50, unique=True, editable=False)
     portfolio = models.ForeignKey(Portfolio, models.DO_NOTHING, related_name='sections')
-    category = models.ForeignKey(SectionCategory, models.DO_NOTHING)
+    category = models.ForeignKey(Category, models.DO_NOTHING)
     created = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, models.CASCADE)
     completed = models.DateTimeField(null=True, blank=True, editable=False)

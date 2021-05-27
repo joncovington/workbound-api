@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 
 from rest_framework import serializers
 
-from portfolio.models import Portfolio, Section, SectionCategory, Task, WorkItem
+from portfolio.models import Portfolio, Section, Category, Task, WorkItem
 from user.serializers import UserSerializer
 
 
@@ -36,10 +36,10 @@ class TaskSerializer(serializers.ModelSerializer):
         return instance
 
 
-class SectionCategorySerializer(serializers.ModelSerializer):
+class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = SectionCategory
+        model = Category
         fields = (
             'title',
             'description',

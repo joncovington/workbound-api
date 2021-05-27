@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
-from portfolio.models import Portfolio, SectionCategory, Section, Task, WorkItem
+from portfolio.models import Portfolio, Category, Section, Task, WorkItem
 from portfolio.tests.test_section_api import sample_section
 
 
@@ -37,17 +37,17 @@ class TestSectionModels(TestCase):
             password='testpass123'
         )
 
-    def test_section_category_str(self):
-        """Test Section Category __str__"""
-        sectioncategory = SectionCategory.objects.create(
-            title='Section Category One',
+    def test_category_str(self):
+        """Test Category __str__"""
+        category = Category.objects.create(
+            title='Category One',
             description='Test description goes here',
             created_by=self.user
         )
 
-        self.assertEqual(bool(sectioncategory.archived), False)
-        self.assertIsNotNone(sectioncategory.created)
-        self.assertEqual(str(sectioncategory), sectioncategory.title)
+        self.assertEqual(bool(category.archived), False)
+        self.assertIsNotNone(category.created)
+        self.assertEqual(str(category), category.title)
 
     def test_section_str(self):
         """Test Section __str__"""
@@ -55,20 +55,20 @@ class TestSectionModels(TestCase):
             reference='TEST123',
             created_by=self.user
         )
-        sectioncategory = SectionCategory.objects.create(
-            title='Section Category One',
+        category = Category.objects.create(
+            title='Category One',
             description='Test description goes here',
             created_by=self.user
         )
         section = Section.objects.create(
-            category=sectioncategory,
+            category=category,
             portfolio=new_portfolio,
             created_by=self.user
         )
 
         self.assertEqual(bool(section.completed), False)
         self.assertIsNotNone(section.created)
-        self.assertEqual(str(section), f'{section.section_id} {sectioncategory.title}')
+        self.assertEqual(str(section), f'{section.section_id} {category.title}')
 
 
 class TestWorkModels(TestCase):

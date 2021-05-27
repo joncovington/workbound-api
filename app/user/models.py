@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 
-from portfolio.models import SectionCategory
+from portfolio.models import Category
 
 
 class RoleType(models.Model):
@@ -16,7 +16,7 @@ class RoleType(models.Model):
 class Role(models.Model):
 
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
-    category = models.ForeignKey(SectionCategory, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
     role_type = models.ForeignKey(RoleType, on_delete=models.CASCADE)
 
     class Meta:

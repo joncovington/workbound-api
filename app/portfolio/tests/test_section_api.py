@@ -10,8 +10,8 @@ from rest_framework import status
 from utils.helpers import sample_email, sample_id
 from portfolio.tests.test_portfolio_api import sample_portfolio
 
-from portfolio.models import SectionCategory, Section
-from portfolio.serializers import SectionSerializer, SectionCategorySerializer
+from portfolio.models import Category, Section
+from portfolio.serializers import SectionSerializer, CategorySerializer
 
 
 User = get_user_model()
@@ -20,7 +20,7 @@ NO_PERMISSION = {
     'detail': 'You do not have permission to perform this action.'
 }
 SECTION_URL = reverse('portfolio:section-list')
-SECTIONCATEGORY_URL = reverse('portfolio:sectioncategory-list')
+SECTIONCATEGORY_URL = reverse('portfolio:category-list')
 
 
 def _sample_user():
@@ -35,11 +35,11 @@ def _get_user(**kwargs):
     return user
 
 
-def sample_sectioncategory(*args, **kwargs):
-    """Returns a sample SectionCategory object for testing"""
+def sample_category(*args, **kwargs):
+    """Returns a sample Category object for testing"""
     user = _get_user(**kwargs)
 
-    return SectionCategory.objects.create(
+    return Category.objects.create(
         title=sample_id(),
         description='',
         created_by=user
@@ -52,7 +52,7 @@ def sample_section(*args, **kwargs):
 
     return Section.objects.create(
         portfolio=sample_portfolio(),
-        category=sample_sectioncategory(),
+        category=sample_category(),
         created_by=user
     )
 
@@ -78,31 +78,31 @@ class PrivateSectionApiTests(TestCase):
         self.user = _sample_user()
         self.client.force_authenticate(user=self.user)
 
-# SectionCategory Tests
+# Category Tests
 
-    def test_retrieve_sectioncategory_with_permission(self):
+    def test_retrieve_category_with_permission(self):
         """Test retrieving sections with correct permissions"""
 
-        categories = [sample_sectioncategory() for i in range(2)]
+        categories = [sample_category() for i in range(2)]
 
-        # add view permission for section category
-        permission = Permission.objects.get(name='Can view Section Category')
+        # add view permission for category
+        permission = Permission.objects.get(name='Can view Category')
         self.user.user_permissions.add(permission)
 
         res = self.client.get(SECTIONCATEGORY_URL)
 
-        sectioncat_qs = SectionCategory.objects.all()
-        serializer = SectionCategorySerializer(sectioncat_qs, many=True)
+        sectioncat_qs = Category.objects.all()
+        serializer = CategorySerializer(sectioncat_qs, many=True)
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
         self.assertEqual(len(res.data), len(sectioncat_qs))
         self.assertTrue(len(categories))
 
-    def test_retrieve_sectioncategory_without_permissions(self):
+    def test_retrieve_category_without_permissions(self):
         """Test retrieving sections without permissions"""
 
-        categories = [sample_sectioncategory() for i in range(2)]
+        categories = [sample_category() for i in range(2)]
 
         res = self.client.get(SECTIONCATEGORY_URL)
 
@@ -110,27 +110,27 @@ class PrivateSectionApiTests(TestCase):
         self.assertEqual(res.data, NO_PERMISSION)
         self.assertTrue(len(categories))
 
-    def test_create_sectioncategory_successful(self):
-        """Test creating new section category successful"""
+    def test_create_category_successful(self):
+        """Test creating new category successful"""
         payload = {'title': 'new_category', 'description': 'blah blah blah'}
 
-        permission = Permission.objects.get(name='Can add Section Category')
+        permission = Permission.objects.get(name='Can add Category')
         self.user.user_permissions.add(permission)
 
         self.client.post(SECTIONCATEGORY_URL, payload)
-        exists = SectionCategory.objects.filter(
+        exists = Category.objects.filter(
             title=payload['title']
         ).exists()
 
         self.assertTrue(exists)
 
-    def test_create_sectioncategory_without_permission_fails(self):
-        """Test creating new section category without permissions fails"""
+    def test_create_category_without_permission_fails(self):
+        """Test creating new category without permissions fails"""
         payload = {'title': 'new_category', 'description': 'blah blah blah'}
 
         res = self.client.post(SECTIONCATEGORY_URL, payload)
 
-        exists = SectionCategory.objects.filter(
+        exists = Category.objects.filter(
             title=payload['title']
         ).exists()
 
@@ -173,7 +173,7 @@ class PrivateSectionApiTests(TestCase):
     def test_create_section_with_permission_successful(self):
         """Test creating new section successful"""
         portfolio = sample_portfolio()
-        category = sample_sectioncategory()
+        category = sample_category()
         payload = {'portfolio': portfolio.id, 'category': category.id, 'created_by': self.user.id}
 
         permission = Permission.objects.get(name='Can add Section')
@@ -193,7 +193,7 @@ class PrivateSectionApiTests(TestCase):
     def test_create_section_without_permission_fails(self):
         """Test creating new section without pemission fails"""
         portfolio = sample_portfolio()
-        category = sample_sectioncategory()
+        category = sample_category()
         payload = {'portfolio': portfolio.id, 'category': category.id, 'created_by': self.user.id}
 
         res = self.client.post(SECTION_URL, payload)

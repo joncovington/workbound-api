@@ -1,5 +1,5 @@
 import django_filters
-from portfolio.models import SectionCategory, Task, WorkItem
+from portfolio.models import Category, Task, WorkItem
 
 
 class TaskFilter(django_filters.FilterSet):
@@ -11,12 +11,12 @@ class TaskFilter(django_filters.FilterSet):
         fields = ('title', )
 
 
-class SectionCategoryFilter(django_filters.FilterSet):
+class CategoryFilter(django_filters.FilterSet):
 
     title = django_filters.CharFilter(lookup_expr='icontains')
 
     class Meta:
-        model = SectionCategory
+        model = Category
         fields = ('title', )
 
 

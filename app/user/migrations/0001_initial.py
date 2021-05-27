@@ -27,7 +27,7 @@ class Migration(migrations.Migration):
             name='Role',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('category', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='portfolio.sectioncategory')),
+                ('category', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='portfolio.category')),
                 ('role_type', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='user.roletype')),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],

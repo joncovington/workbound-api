@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 
-from portfolio.models import SectionCategory
+from portfolio.models import Category
 
 from user.models import RoleType, Role
 
@@ -20,9 +20,9 @@ class TestUserModels(TestCase):
         self.assertGreaterEqual(len(role_types), 2)
 
     def test_add_user_to_role(self):
-        """Test adding user to a role within a section category"""
+        """Test adding user to a role within a category"""
         user = get_user_model().objects.create_user('test@workbound.info', 'testpass123')
-        department = SectionCategory.objects.create(title='Test department', description='', created_by=user)
+        department = Category.objects.create(title='Test department', description='', created_by=user)
         role_type = RoleType.objects.get(name='User')
         Role.objects.create(user=user, category=department, role_type=role_type)
         test_role = Role.objects.filter(user=user)
