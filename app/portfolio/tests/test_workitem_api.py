@@ -24,7 +24,7 @@ TASK_URL = reverse('portfolio:task-list')
 
 
 def _sample_user():
-    return User.objects.create(email=sample_email(), password=sample_id())
+    return User.objects.create_user(email=sample_email(), password=sample_id())
 
 
 def _get_user(**kwargs):

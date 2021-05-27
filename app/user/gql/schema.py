@@ -5,7 +5,7 @@ from graphql_jwt import ObtainJSONWebToken, Verify, Refresh
 from graphql_jwt.decorators import login_required
 
 from user.gql.types import UserType
-from user.gql.mutations import UserCreate
+from user.gql.mutations import CreateUser
 
 User = get_user_model()
 
@@ -24,7 +24,7 @@ class Query(graphene.ObjectType):
 
 
 class Mutation(graphene.ObjectType):
-    user_create = UserCreate.Field()
+    create_user = CreateUser.Field()
     token_auth = ObtainJSONWebToken.Field()
     verify_token = Verify.Field()
     refresh_token = Refresh.Field()
