@@ -1,6 +1,6 @@
 # workbound-api
 A workflow management API
-
+[![Build Status](https://travis-ci.com/joncovington/workbound-api.svg?branch=main)](https://travis-ci.com/joncovington/workbound-api)
 Before running docker-compose:
   create .env in the /app level with the environment variables shown in example.env
   docker-compose --env-file ./app/.env run app sh -c "python manage.py makemigrations"
