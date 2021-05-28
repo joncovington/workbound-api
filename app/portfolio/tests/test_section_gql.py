@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
+from django.utils import timezone
 from graphene_django.utils.testing import GraphQLTestCase
 from graphql_jwt.shortcuts import get_token
 
@@ -264,6 +265,107 @@ class SectionMutationTests(GraphQLTestCase):
                 createCategory(title: $title,
                            description: $description,
                            createdById: $createdById){
+                    category{
+                        id
+                        title
+                        description
+                        created
+                        createdBy{
+                            id
+                            email
+                        }
+                        archived
+                        }
+                    }
+                }
+             """
+        response = self.query(gql, headers=headers, variables=variables)
+
+        self.assertEqual(response.json()['errors'][0]['message'], NO_PERMISSION)
+
+    def test_update_category_with_perm_successful(self):
+        """Test updating a category with correct permissions is successful"""
+        user = _sample_user()
+        permission = Permission.objects.get(name='Can change Category')
+        user.user_permissions.add(permission)
+        token = get_token(user)
+        headers = {"HTTP_AUTHORIZATION": f"JWT {token}"}
+        category = sample_category(user=user)
+
+        # make sure we generate a new title
+        new_title = category.title
+        while category.title is new_title:
+            new_title = sample_id(size=10)
+
+        new_archived_date = timezone.now().isoformat()
+
+        variables = {'id': category.id,
+                     'title': new_title,
+                     'description': sample_id(size=20),
+                     'archived': new_archived_date
+                     }
+        gql = """
+              mutation updateCategory($id: Int!
+                                  $title: String!,
+                                  $description: String!,
+                                  $archived: DateTime!) {
+                updateCategory(id: $id,
+                           title: $title,
+                           description: $description,
+                           archived: $archived){
+                    category{
+                        id
+                        title
+                        description
+                        created
+                        createdBy{
+                            id
+                            email
+                        }
+                        archived
+                        }
+                    }
+                }
+             """
+        response = self.query(gql, headers=headers, variables=variables)
+        updated_category = response.json()['data']['updateCategory']['category']
+
+        self.assertResponseNoErrors(response)
+        # Task id should be the same
+        self.assertEqual(updated_category['id'], category.id)
+        # Task title should be updated
+        self.assertEqual(updated_category['title'], variables['title'])
+        # Returned task title isn't the old task model title
+        self.assertNotEqual(updated_category['title'], category.title)
+
+    def test_update_category_without_perm_fails(self):
+        """Test updating a category without permissions fails"""
+        user = _sample_user()
+        token = get_token(user)
+        headers = {"HTTP_AUTHORIZATION": f"JWT {token}"}
+        category = sample_category(user=user)
+
+        # make sure we generate a new title
+        new_title = category.title
+        while category.title is new_title:
+            new_title = sample_id(size=10)
+
+        new_archived_date = timezone.now().isoformat()
+
+        variables = {'id': category.id,
+                     'title': new_title,
+                     'description': sample_id(size=20),
+                     'archived': new_archived_date
+                     }
+        gql = """
+              mutation updateCategory($id: Int!
+                                  $title: String!,
+                                  $description: String!,
+                                  $archived: DateTime!) {
+                updateCategory(id: $id,
+                           title: $title,
+                           description: $description,
+                           archived: $archived){
                     category{
                         id
                         title

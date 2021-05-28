@@ -1,8 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db.models import Q
-
 from graphql_jwt.decorators import permission_required
-
 from graphene import (ObjectType,
                       Schema,
                       Field,
@@ -13,7 +11,7 @@ from graphene import (ObjectType,
 
 from portfolio.gql.types import CategoryType, TaskType
 from portfolio.models import Category, Task
-from portfolio.gql.mutation import CreateCategory, CreateTask, UpdateTask
+from portfolio.gql.mutation import CreateCategory, CreateTask, UpdateCategory, UpdateTask
 
 
 User = get_user_model()
@@ -60,8 +58,10 @@ class Query(ObjectType):
 
 class Mutation(ObjectType):
     create_task = CreateTask.Field()
-    create_category = CreateCategory.Field()
     update_task = UpdateTask.Field()
+
+    create_category = CreateCategory.Field()
+    update_category = UpdateCategory.Field()
 
 
 schema = Schema(query=Query, mutation=Mutation)

@@ -2,7 +2,6 @@ from datetime import datetime
 from django.contrib.auth import get_user_model
 
 from graphql_jwt.decorators import permission_required
-
 from graphene import (Mutation,
                       Field,
                       Int,
@@ -38,7 +37,7 @@ class CreateTask(Mutation):
 
 
 class UpdateTask(Mutation):
-    """Graphql mutation to create a Task"""
+    """Graphql mutation to update a Task"""
     class Arguments:
         id = Int(required=True)
         title = String()
@@ -54,7 +53,7 @@ class UpdateTask(Mutation):
         task_id = kwargs.pop('id')
         task = Task.objects.get(id=task_id)
         if hasattr(kwargs, 'archived'):
-            archived_date = datetime.fromisoformat(kwargs['archived'])
+            archived_date = datetime.fromisoformat(kwargs.pop(['archived']))
             task.archived = archived_date
 
         for k, v in kwargs.items():
@@ -79,5 +78,31 @@ class CreateCategory(Mutation):
         user_id = kwargs.pop('created_by_id')
         user = User.objects.get(id=user_id)
         category = Category.objects.create(created_by=user, **kwargs)
+        category.save()
+        return cls(category=category)
+
+
+class UpdateCategory(Mutation):
+    """Graphql mutation to update a category"""
+    class Arguments:
+        id = Int(required=True)
+        title = String()
+        description = String()
+        archived = DateTime()
+
+    category = Field(CategoryType)
+
+    @classmethod
+    @permission_required('portfolio.change_category')
+    def mutate(cls, root, info, **kwargs):
+        cat_id = kwargs.pop('id')
+        category = Category.objects.get(id=cat_id)
+        if hasattr(kwargs, 'archived'):
+            archived_date = datetime.fromisoformat(kwargs.pop(['archived']))
+            category.archived = archived_date
+
+        for k, v in kwargs.items():
+            if k in [field.name for field in category._meta.get_fields()]:
+                setattr(category, k, v)
         category.save()
         return cls(category=category)
