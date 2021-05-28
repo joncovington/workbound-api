@@ -1,4 +1,3 @@
-from datetime import datetime
 from django.contrib.auth import get_user_model
 
 from graphql_jwt.decorators import permission_required
@@ -109,14 +108,7 @@ class UpdateCategory(Mutation):
     @classmethod
     @permission_required('portfolio.change_category')
     def mutate(cls, root, info, **kwargs):
-        cat_id = kwargs.pop('id')
-        category = Category.objects.get(id=cat_id)
-        if hasattr(kwargs, 'archived'):
-            archived_date = datetime.fromisoformat(kwargs.pop(['archived']))
-            category.archived = archived_date
-
-        for k, v in kwargs.items():
-            if k in [field.name for field in category._meta.get_fields()]:
-                setattr(category, k, v)
-        category.save()
-        return cls(category=category)
+        category_instance = Category.objects.get(id=kwargs['id'])
+        serializer = CategorySerializer(instance=category_instance, data=kwargs)
+        serializer.is_valid(raise_exception=True)
+        return UpdateCategory(category=serializer.save())
