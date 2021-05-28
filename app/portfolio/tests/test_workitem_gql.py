@@ -1,5 +1,7 @@
+from random import randrange
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
+from django.utils import timezone
 from graphene_django.utils.testing import GraphQLTestCase
 from graphql_jwt.shortcuts import get_token
 
@@ -272,6 +274,111 @@ class WorkItemMutationTests(GraphQLTestCase):
                            description: $description,
                            duration: $duration,
                            createdById: $createdById){
+                    task{
+                        id
+                        title
+                        description
+                        duration
+                        created
+                        createdBy{
+                            id
+                            email
+                        }
+                        archived
+                        }
+                    }
+                }
+             """
+        response = self.query(gql, headers=headers, variables=variables)
+
+        self.assertEqual(response.json()['errors'][0]['message'], NO_PERMISSION)
+
+    def test_update_task_with_perm_successful(self):
+        """Test updating a task with correct permissions is successful"""
+        user = _sample_user()
+        permission = Permission.objects.get(name='Can change Task')
+        user.user_permissions.add(permission)
+        token = get_token(user)
+        headers = {"HTTP_AUTHORIZATION": f"JWT {token}"}
+        task = sample_task(user=user)
+
+        # make sure we generate a new title
+        new_title = task.title
+        while task.title is new_title:
+            new_title = sample_id(size=10)
+
+        new_archived_date = timezone.now().isoformat()
+
+        variables = {'id': task.id,
+                     'title': new_title,
+                     'description': sample_id(size=20),
+                     'duration': randrange(10),
+                     'archived': new_archived_date
+                     }
+        gql = """
+              mutation updateTask($id: Int!
+                                  $title: String!,
+                                  $description: String!,
+                                  $duration: Int!,
+                                  $archived: DateTime!) {
+                updateTask(id: $id,
+                           title: $title,
+                           description: $description,
+                           duration: $duration,
+                           archived: $archived){
+                    task{
+                        id
+                        title
+                        description
+                        duration
+                        created
+                        createdBy{
+                            id
+                            email
+                        }
+                        archived
+                        }
+                    }
+                }
+             """
+        response = self.query(gql, headers=headers, variables=variables)
+        updated_task = response.json()['data']['updateTask']['task']
+
+        self.assertResponseNoErrors(response)
+        # Task id should be the same
+        self.assertEqual(updated_task['id'], task.id)
+        # Task title should be updated
+        self.assertEqual(updated_task['title'], variables['title'])
+        # Returned task title isn't the old task model title
+        self.assertNotEqual(updated_task['title'], task.title)
+
+    def test_update_task_without_perm_fails(self):
+        """Test updating a task without permissions fails"""
+        user = _sample_user()
+
+        token = get_token(user)
+        headers = {"HTTP_AUTHORIZATION": f"JWT {token}"}
+        task = sample_task(user=user)
+
+        # make sure we generate a new title
+        new_title = task.title
+        while task.title is new_title:
+            new_title = sample_id(size=10)
+
+        variables = {'id': task.id,
+                     'title': new_title,
+                     'description': sample_id(size=20),
+                     'duration': randrange(10),
+                     }
+        gql = """
+              mutation updateTask($id: Int!
+                                  $title: String!,
+                                  $description: String!,
+                                  $duration: Int!) {
+                updateTask(id: $id,
+                           title: $title,
+                           description: $description,
+                           duration: $duration){
                     task{
                         id
                         title

@@ -13,7 +13,7 @@ from graphene import (ObjectType,
 
 from portfolio.gql.types import CategoryType, TaskType
 from portfolio.models import Category, Task
-from portfolio.gql.mutation import CreateCategory, CreateTask
+from portfolio.gql.mutation import CreateCategory, CreateTask, UpdateTask
 
 
 User = get_user_model()
@@ -61,6 +61,7 @@ class Query(ObjectType):
 class Mutation(ObjectType):
     create_task = CreateTask.Field()
     create_category = CreateCategory.Field()
+    update_task = UpdateTask.Field()
 
 
 schema = Schema(query=Query, mutation=Mutation)
