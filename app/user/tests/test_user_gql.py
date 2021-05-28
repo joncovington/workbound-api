@@ -16,7 +16,7 @@ def _sample_user(email, password):
 
 class UserQueryTests(GraphQLTestCase):
 
-    def test_retreive_current_user_success(self):
+    def test_retreive_current_user_with_auth_success(self):
         """Test retrieving a user with authorization is successful"""
         user = _sample_user('test@workbound.info', 'TestPass123')
         token = get_token(user)

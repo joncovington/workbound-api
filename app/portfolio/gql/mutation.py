@@ -15,7 +15,7 @@ User = get_user_model()
 
 
 class CreateTask(Mutation):
-
+    """Graphql mutation to create a Task"""
     class Arguments:
         title = String(required=True)
         description = String(required=True)
