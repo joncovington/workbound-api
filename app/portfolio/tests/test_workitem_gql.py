@@ -9,6 +9,7 @@ from portfolio.tests.test_workitem_api import sample_task
 User = get_user_model()
 
 NO_PERMISSION = 'You do not have permission to perform this action'
+NO_MATCH = 'Task matching query does not exist.'
 USER_CREDENTIALS = {'email': 'test_user@workbound.info', 'password': 'TestPass123'}
 ADMIN_CREDENTIALS = {'email': 'test_admin@workbound.info', 'password': 'TestPass123'}
 
@@ -54,7 +55,7 @@ class WorkItemQueryTests(GraphQLTestCase):
         self.assertEqual(len(response.json()['data']['tasks']), len(tasks))
         self.assertResponseNoErrors(response)
 
-    def test_retreive_task_without_auth_fails(self):
+    def test_retreive_tasks_without_auth_fails(self):
         """Test retrieving tasks without authorization is fails"""
         task_count = 5
         [sample_task() for i in range(task_count)]
@@ -115,6 +116,93 @@ class WorkItemQueryTests(GraphQLTestCase):
 
         self.assertEqual(len(response.json()['data']['tasks']), len(user_tasks) + len(other_tasks))
         self.assertResponseNoErrors(response)
+
+    def test_retreive_task_with_id_success(self):
+        """Test retrieving a task with authorized user is successful"""
+
+        task = sample_task()
+        user = _sample_user()
+        permission = Permission.objects.get(name='Can view Task')
+        user.user_permissions.add(permission)
+        token = get_token(user)
+        headers = {"HTTP_AUTHORIZATION": f"JWT {token}"}
+        variables = {'id': task.id}
+        gql = """
+              query task ($id: Int!){
+                        task(id: $id){
+                            id
+                            title
+                            duration
+                            created
+                            createdBy {
+                                id
+                                email
+                            }
+                            archived
+                    }
+                }
+             """
+        response = self.query(gql, headers=headers, variables=variables)
+
+        self.assertEqual(response.json()['data']['task']['id'], task.id)
+        self.assertResponseNoErrors(response)
+
+    def test_retreive_task_with_id_no_perm_fail(self):
+        """Test retrieving a specific task without permissions fails"""
+
+        task = sample_task()
+        user = _sample_user()
+
+        token = get_token(user)
+        headers = {"HTTP_AUTHORIZATION": f"JWT {token}"}
+        variables = {'id': task.id}
+        gql = """
+              query task ($id: Int!){
+                        task(id: $id){
+                            id
+                            title
+                            duration
+                            created
+                            createdBy {
+                                id
+                                email
+                            }
+                            archived
+                    }
+                }
+             """
+        response = self.query(gql, headers=headers, variables=variables)
+
+        self.assertEqual(response.json()['errors'][0]['message'], NO_PERMISSION)
+
+    def test_retreive_task_incorrect_params_vals_fails(self):
+        """Test retrieving a task with bad value fails"""
+
+        task = sample_task()
+        user = _sample_user()
+        permission = Permission.objects.get(name='Can view Task')
+        user.user_permissions.add(permission)
+        token = get_token(user)
+        headers = {"HTTP_AUTHORIZATION": f"JWT {token}"}
+        variables = {'id': task.id + 1}
+        gql = """
+              query task ($id: Int!){
+                        task(id: $id){
+                            id
+                            title
+                            duration
+                            created
+                            createdBy {
+                                id
+                                email
+                            }
+                            archived
+                    }
+                }
+             """
+        response = self.query(gql, headers=headers, variables=variables)
+
+        self.assertEqual(response.json()['errors'][0]['message'], NO_MATCH)
 
 
 class WorkItemMutationTests(GraphQLTestCase):
