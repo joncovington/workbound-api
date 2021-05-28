@@ -21,6 +21,7 @@ class TaskSerializer(serializers.ModelSerializer):
             'created_by',
             'archived',
         )
+        read_only_fields = ('created', )
 
     def create(self, validated_data):
         task = Task.objects.create(**validated_data)
@@ -47,7 +48,11 @@ class CategorySerializer(serializers.ModelSerializer):
             'created_by',
             'archived',
         )
-        read_only_fields = ('created', 'created_by')
+        read_only_fields = ('created', )
+
+    def create(self, validated_data):
+        category = Category.objects.create(**validated_data)
+        return category
 
 
 class SectionSerializer(serializers.ModelSerializer):

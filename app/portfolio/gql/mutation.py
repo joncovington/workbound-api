@@ -12,12 +12,33 @@ from graphene import (Mutation,
 
 from portfolio.gql.types import CategoryType, TaskType
 from portfolio.models import Category, Task
+from portfolio.serializers import CategorySerializer, TaskSerializer
 
 User = get_user_model()
 
 
+# class CreateTask(Mutation):
+#     """Graphql mutation to create a Task"""
+#     class Arguments:
+#         title = String(required=True)
+#         description = String(required=True)
+#         duration = Int(required=True)
+#         created_by_id = Int(required=True)
+
+#     task = Field(TaskType)
+
+#     @classmethod
+#     @permission_required('portfolio.add_task')
+#     def mutate(cls, root, info, **kwargs):
+#         user_id = kwargs.pop('created_by_id')
+#         user = User.objects.get(id=user_id)
+#         task = Task.objects.create(created_by=user, **kwargs)
+#         task.save()
+#         return cls(task=task)
+
+
 class CreateTask(Mutation):
-    """Graphql mutation to create a Task"""
+    """Graphql mutation using serializer to create a Task"""
     class Arguments:
         title = String(required=True)
         description = String(required=True)
@@ -29,11 +50,11 @@ class CreateTask(Mutation):
     @classmethod
     @permission_required('portfolio.add_task')
     def mutate(cls, root, info, **kwargs):
-        user_id = kwargs.pop('created_by_id')
-        user = User.objects.get(id=user_id)
-        task = Task.objects.create(created_by=user, **kwargs)
-        task.save()
-        return cls(task=task)
+        serializer_data = kwargs
+        serializer_data['created_by'] = kwargs.pop('created_by_id')
+        serializer = TaskSerializer(data=serializer_data)
+        serializer.is_valid(raise_exception=True)
+        return CreateTask(task=serializer.save())
 
 
 class UpdateTask(Mutation):
@@ -75,11 +96,11 @@ class CreateCategory(Mutation):
     @classmethod
     @permission_required('portfolio.add_category')
     def mutate(cls, root, info, **kwargs):
-        user_id = kwargs.pop('created_by_id')
-        user = User.objects.get(id=user_id)
-        category = Category.objects.create(created_by=user, **kwargs)
-        category.save()
-        return cls(category=category)
+        serializer_data = kwargs
+        serializer_data['created_by'] = kwargs.pop('created_by_id')
+        serializer = CategorySerializer(data=serializer_data)
+        serializer.is_valid(raise_exception=True)
+        return CreateCategory(category=serializer.save())
 
 
 class UpdateCategory(Mutation):

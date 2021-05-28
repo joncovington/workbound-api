@@ -46,9 +46,6 @@ class CategoryViewSet(viewsets.ModelViewSet):
     serializer_class = CategorySerializer
     filterset_class = CategoryFilter
 
-    def perform_create(self, serializer):
-        serializer.save(created_by=self.request.user)
-
 
 class TaskViewSet(viewsets.ModelViewSet):
     """Manage Tasks in the database"""
