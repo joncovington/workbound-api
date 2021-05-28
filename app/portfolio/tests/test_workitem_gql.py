@@ -3,6 +3,8 @@ from django.contrib.auth.models import Permission
 from graphene_django.utils.testing import GraphQLTestCase
 from graphql_jwt.shortcuts import get_token
 
+from utils.helpers import sample_id
+
 from portfolio.tests.test_workitem_api import sample_task
 
 
@@ -206,4 +208,85 @@ class WorkItemQueryTests(GraphQLTestCase):
 
 
 class WorkItemMutationTests(GraphQLTestCase):
-    pass
+    """Graphql WorkItem Mutation Tests"""
+
+    def test_create_task_with_permissions_success(self):
+        """Test creating a task with correct permissions is successful"""
+        user = _sample_user()
+        permission = Permission.objects.get(name='Can add Task')
+        user.user_permissions.add(permission)
+        token = get_token(user)
+        headers = {"HTTP_AUTHORIZATION": f"JWT {token}"}
+        variables = {'title': sample_id(size=10),
+                     'description': sample_id(size=20),
+                     'duration': 10,
+                     'createdById': user.id
+                     }
+        gql = """
+              mutation createTask($title: String!,
+                                  $description: String!,
+                                  $duration: Int!,
+                                  $createdById: Int!) {
+                createTask(title: $title,
+                           description: $description,
+                           duration: $duration,
+                           createdById: $createdById){
+                    task{
+                        id
+                        title
+                        description
+                        duration
+                        created
+                        createdBy{
+                            id
+                            email
+                        }
+                        archived
+                        }
+                    }
+                }
+             """
+        response = self.query(gql, headers=headers, variables=variables)
+        task = response.json()['data']['createTask']['task']
+
+        self.assertResponseNoErrors(response)
+        self.assertEqual(task['createdBy']['email'], user.email)
+        self.assertEqual(task['title'], variables['title'])
+
+    def test_create_task_without_permissions_fails(self):
+        """Test creating a task without permissions fails"""
+        user = _sample_user()
+        token = get_token(user)
+        headers = {"HTTP_AUTHORIZATION": f"JWT {token}"}
+        variables = {'title': sample_id(size=10),
+                     'description': sample_id(size=20),
+                     'duration': 10,
+                     'createdById': user.id
+                     }
+        gql = """
+              mutation createTask($title: String!,
+                                  $description: String!,
+                                  $duration: Int!,
+                                  $createdById: Int!) {
+                createTask(title: $title,
+                           description: $description,
+                           duration: $duration,
+                           createdById: $createdById){
+                    task{
+                        id
+                        title
+                        description
+                        duration
+                        created
+                        createdBy{
+                            id
+                            email
+                        }
+                        archived
+                        }
+                    }
+                }
+             """
+        response = self.query(gql, headers=headers, variables=variables)
+
+        self.assertEqual(response.json()['errors'][0]['message'], NO_PERMISSION)
