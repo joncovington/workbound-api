@@ -8,8 +8,8 @@ from graphene import (Mutation,
                       )
 
 
-from portfolio.gql.types import TaskType
-from portfolio.models import Task
+from portfolio.gql.types import CategoryType, TaskType
+from portfolio.models import Category, Task
 
 User = get_user_model()
 
@@ -32,3 +32,22 @@ class CreateTask(Mutation):
         task = Task.objects.create(created_by=user, **kwargs)
         task.save()
         return cls(task=task)
+
+
+class CreateCategory(Mutation):
+    """Graphql mutation to create a Category"""
+    class Arguments:
+        title = String(required=True)
+        description = String(required=True)
+        created_by_id = Int(required=True)
+
+    category = Field(CategoryType)
+
+    @classmethod
+    @permission_required('portfolio.add_category')
+    def mutate(cls, root, info, **kwargs):
+        user_id = kwargs.pop('created_by_id')
+        user = User.objects.get(id=user_id)
+        category = Category.objects.create(created_by=user, **kwargs)
+        category.save()
+        return cls(category=category)
