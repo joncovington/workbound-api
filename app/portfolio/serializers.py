@@ -27,15 +27,6 @@ class TaskSerializer(serializers.ModelSerializer):
         task = Task.objects.create(**validated_data)
         return task
 
-    def update(self, instance, validated_data):
-        created_by_data = validated_data.pop('created_by')
-        created_by, created = User.objects.get_or_create(**created_by_data)
-        instance.created_by = created_by
-        for attr, value in validated_data.items:
-            setattr(instance, attr, value)
-        instance.save()
-        return instance
-
 
 class CategorySerializer(serializers.ModelSerializer):
 
