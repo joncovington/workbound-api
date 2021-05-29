@@ -1,3 +1,6 @@
+import coreapi
+import coreschema
+from rest_framework import schemas
 from rest_framework import generics, authentication, permissions, viewsets, mixins
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authentication import TokenAuthentication
@@ -28,6 +31,21 @@ class CreateTokenView(ObtainAuthToken):
     """Create a new auth token for user """
     serializer_class = AuthTokenSerializer
     renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
+
+    schema = schemas.ManualSchema(fields=[
+        coreapi.Field(
+            "email",
+            required=True,
+            location="form",
+            schema=coreschema.String()
+        ),
+        coreapi.Field(
+            "password",
+            required=True,
+            location="form",
+            schema=coreschema.String()
+        ),
+    ])
 
 
 class ManageUserView(generics.RetrieveUpdateAPIView):
