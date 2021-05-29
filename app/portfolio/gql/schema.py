@@ -6,10 +6,14 @@ from graphene import (ObjectType,
                       Field,
                       Int,
                       String,
-                      List
+                      List,
+                      relay,
                       )
+from graphene_django.filter import DjangoFilterConnectionField
+from portfolio.filters import CategoryFilter, TaskFilter
 
-from portfolio.gql.types import CategoryType, TaskType
+
+from portfolio.gql.types import CategoryNode, CategoryType, TaskNode, TaskType
 from portfolio.models import Category, Task
 from portfolio.gql.mutation import CreateCategory, CreateTask, UpdateCategory, UpdateTask
 
@@ -37,6 +41,10 @@ class Query(ObjectType):
             return Task.objects.filter(filter)
         return Task.objects.all()
 
+    # Task Node queries
+    task_node = relay.Node.Field(TaskNode)
+    tasks_node = DjangoFilterConnectionField(TaskNode, filterset_class=TaskFilter)
+
     # Category queries
     category = Field(CategoryType, id=Int())
     categories = List(CategoryType, title=String())
@@ -54,6 +62,10 @@ class Query(ObjectType):
             )
             return Category.objects.filter(filter)
         return Category.objects.all()
+
+    # category Node queries
+    category_node = relay.Node.Field(CategoryNode)
+    categories_node = DjangoFilterConnectionField(CategoryNode, filterset_class=CategoryFilter)
 
 
 class Mutation(ObjectType):
