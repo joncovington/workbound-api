@@ -7,14 +7,10 @@ from graphene import (ObjectType,
                       Int,
                       String,
                       List,
-                      relay,
                       )
-from graphene_django.filter import DjangoFilterConnectionField
-from portfolio.filters import CategoryFilter, TaskFilter
 
-
-from portfolio.gql.types import CategoryNode, CategoryType, TaskNode, TaskType
-from portfolio.models import Category, Task
+from portfolio.gql.types import CategoryType, PortfolioType, TaskType
+from portfolio.models import Category, Portfolio, Task
 from portfolio.gql.mutation import CreateCategory, CreateTask, UpdateCategory, UpdateTask
 
 
@@ -41,10 +37,6 @@ class Query(ObjectType):
             return Task.objects.filter(filter)
         return Task.objects.all()
 
-    # Task Node queries
-    task_node = relay.Node.Field(TaskNode)
-    tasks_node = DjangoFilterConnectionField(TaskNode, filterset_class=TaskFilter)
-
     # Category queries
     category = Field(CategoryType, id=Int())
     categories = List(CategoryType, title=String())
@@ -63,9 +55,23 @@ class Query(ObjectType):
             return Category.objects.filter(filter)
         return Category.objects.all()
 
-    # category Node queries
-    category_node = relay.Node.Field(CategoryNode)
-    categories_node = DjangoFilterConnectionField(CategoryNode, filterset_class=CategoryFilter)
+    # Portfolio queries
+    portfolio = Field(PortfolioType, id=Int())
+    portfolios = List(PortfolioType, portfolio_id=String())
+
+    @permission_required('portfolio.view_portfolio')
+    def resolve_portfolio(root, info, id):
+        # Querying a single portfolio
+        return Portfolio.objects.get(id=id)
+
+    @permission_required('portfolio.view_portfolio')
+    def resolve_portfolios(root, info, portfolio_id):
+        if portfolio_id:
+            filter = (
+                Q(portfolio_id__exact=portfolio_id)
+            )
+            return Portfolio.objects.filter(filter)
+        return Portfolio.objects.all()
 
 
 class Mutation(ObjectType):

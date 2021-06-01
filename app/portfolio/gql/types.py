@@ -1,7 +1,7 @@
-from graphene import Int, relay
+from graphene import Int
 from graphene_django import DjangoObjectType
 
-from portfolio.models import Category, Task
+from portfolio.models import Category, Portfolio, Task
 
 
 class TaskType(DjangoObjectType):
@@ -11,15 +11,6 @@ class TaskType(DjangoObjectType):
         model = Task
 
 
-class TaskNode(DjangoObjectType):
-    pk = Int(source='id')
-
-    class Meta:
-        model = Task
-        fields = ['title', 'description', 'duration', ]
-        interfaces = (relay.Node, )
-
-
 class CategoryType(DjangoObjectType):
     id = Int(source='id')
 
@@ -27,10 +18,8 @@ class CategoryType(DjangoObjectType):
         model = Category
 
 
-class CategoryNode(DjangoObjectType):
-    pk = Int(source='id')
+class PortfolioType(DjangoObjectType):
+    id = Int(source='id')
 
     class Meta:
-        model = Category
-        fields = ['title', 'description', 'duration', ]
-        interfaces = (relay.Node, )
+        model = Portfolio

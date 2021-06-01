@@ -13,7 +13,6 @@ class TaskFilter(django_filters.FilterSet):
 
 
 class CategoryFilter(django_filters.FilterSet):
-
     title = django_filters.CharFilter(lookup_expr='icontains')
 
     class Meta:
