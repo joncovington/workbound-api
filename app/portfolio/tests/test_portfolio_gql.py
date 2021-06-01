@@ -269,3 +269,46 @@ class PortfolioMutationTests(GraphQLTestCase):
         self.assertEqual(updated_portfolio['reference'], variables['reference'])
         # Returned portfolio reference isn't the old portfolio model reference
         self.assertNotEqual(updated_portfolio['reference'], portfolio.reference)
+
+    def test_update_portfolio_without_perm_fails(self):
+        """Test updating a portfolio without permissions is fails"""
+        user = _sample_user()
+        token = get_token(user)
+        headers = {"HTTP_AUTHORIZATION": f"JWT {token}"}
+        portfolio = sample_portfolio(user=user)
+
+        # make sure we generate a new title
+        new_reference = portfolio.reference
+        while portfolio.reference is new_reference:
+            new_reference = sample_id(size=10)
+
+        new_completed_date = timezone.now().isoformat()
+
+        variables = {'id': portfolio.id,
+                     'reference': new_reference,
+                     'completed': new_completed_date
+                     }
+        gql = """
+              mutation updatePortfolio($id: Int!
+                                  $reference: String!,
+                                  $completed: DateTime!) {
+                updatePortfolio(id: $id,
+                           reference: $reference,
+                           completed: $completed){
+                    portfolio{
+                        id
+                        portfolioId
+                        reference
+                        created
+                        createdBy{
+                            id
+                            email
+                        }
+                        completed
+                        }
+                    }
+                }
+             """
+        response = self.query(gql, headers=headers, variables=variables)
+
+        self.assertEqual(response.json()['errors'][0]['message'], NO_PERMISSION)
