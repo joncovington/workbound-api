@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from graphql_jwt.decorators import permission_required
 from graphene import (Mutation,
                       Field,
@@ -6,9 +7,11 @@ from graphene import (Mutation,
                       DateTime,
                       )
 
-from portfolio.gql.types import CategoryType, TaskType
+from portfolio.gql.types import CategoryType, PortfolioType, TaskType
 from portfolio.models import Category, Task
-from portfolio.serializers import CategorySerializer, TaskSerializer
+from portfolio.serializers import CategorySerializer, PortfolioSerializer, TaskSerializer
+
+User = get_user_model()
 
 
 class CreateTask(Mutation):
@@ -87,3 +90,21 @@ class UpdateCategory(Mutation):
         serializer = CategorySerializer(instance=category_instance, data=kwargs)
         serializer.is_valid(raise_exception=True)
         return UpdateCategory(category=serializer.save())
+
+
+class CreatePortfolio(Mutation):
+    """Graphql mutation using serializer to create a Portfolio"""
+    class Arguments:
+        reference = String()
+        created_by_id = Int(required=True)
+
+    portfolio = Field(PortfolioType)
+
+    @classmethod
+    @permission_required('portfolio.add_portfolio')
+    def mutate(cls, root, info, **kwargs):
+        serializer_data = kwargs
+        serializer_data['created_by'] = kwargs.pop('created_by_id')
+        serializer = PortfolioSerializer(data=serializer_data)
+        serializer.is_valid(raise_exception=True)
+        return CreatePortfolio(portfolio=serializer.save())

@@ -3,6 +3,8 @@ from django.contrib.auth.models import Permission
 from graphene_django.utils.testing import GraphQLTestCase
 from graphql_jwt.shortcuts import get_token
 
+from utils.helpers import sample_id
+
 from portfolio.tests.test_portfolio_api import sample_portfolio
 
 
@@ -148,4 +150,69 @@ class PortfolioQueryTests(GraphQLTestCase):
 
 class PortfolioMutationTests(GraphQLTestCase):
     """Graphql Portfolio Mutation Tests"""
-    pass
+
+    def test_create_portfolio_with_permissions_success(self):
+        """Test creating a portfolio with correct permissions is successful"""
+        user = _sample_user()
+        permission = Permission.objects.get(name='Can add Portfolio')
+        user.user_permissions.add(permission)
+        token = get_token(user)
+        headers = {"HTTP_AUTHORIZATION": f"JWT {token}"}
+        variables = {'reference': sample_id(size=10),
+                     'createdById': user.id
+                     }
+        gql = """
+              mutation createPortfolio($reference: String!
+                                  $createdById: Int!) {
+                createPortfolio(reference: $reference,
+                           createdById: $createdById){
+                    portfolio{
+                        id
+                        portfolioId
+                        reference
+                        created
+                        createdBy{
+                            id
+                            email
+                        }
+                        completed
+                        }
+                    }
+                }
+             """
+        response = self.query(gql, headers=headers, variables=variables)
+        portfolio = response.json()['data']['createPortfolio']['portfolio']
+        self.assertResponseNoErrors(response)
+        self.assertEqual(portfolio['createdBy']['email'], user.email)
+        self.assertEqual(portfolio['reference'], variables['reference'])
+
+    def test_create_portfolio_without_permissions_fails(self):
+        """Test creating a portfolio without permissions is fails"""
+        user = _sample_user()
+        token = get_token(user)
+        headers = {"HTTP_AUTHORIZATION": f"JWT {token}"}
+        variables = {'reference': sample_id(size=10),
+                     'createdById': user.id
+                     }
+        gql = """
+              mutation createPortfolio($reference: String!
+                                  $createdById: Int!) {
+                createPortfolio(reference: $reference,
+                           createdById: $createdById){
+                    portfolio{
+                        id
+                        portfolioId
+                        reference
+                        created
+                        createdBy{
+                            id
+                            email
+                        }
+                        completed
+                        }
+                    }
+                }
+             """
+        response = self.query(gql, headers=headers, variables=variables)
+
+        self.assertEqual(response.json()['errors'][0]['message'], NO_PERMISSION)

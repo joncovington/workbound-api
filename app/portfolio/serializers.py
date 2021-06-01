@@ -61,7 +61,7 @@ class SectionSerializer(serializers.ModelSerializer):
             'completed',
             'workitems',
         )
-        read_only_fields = ('id', 'section_id', 'created', 'created_by', )
+        read_only_fields = ('id', 'section_id', 'created', )
 
     def to_representation(self, instance):
         data = super(SectionSerializer, self).to_representation(instance)
@@ -85,7 +85,7 @@ class WorkItemSerializer(serializers.ModelSerializer):
             'assigned_to',
         )
 
-        read_only_fields = ('id', 'workitem_id', 'created', 'created_by', )
+        read_only_fields = ('id', 'workitem_id', 'created', )
 
     def to_representation(self, instance):
         data = super(WorkItemSerializer, self).to_representation(instance)
@@ -103,9 +103,13 @@ class PortfolioSerializer(serializers.ModelSerializer):
     class Meta:
         model = Portfolio
         fields = ['id', 'portfolio_id', 'reference', 'sections', 'created', 'created_by', 'meta', 'completed', ]
-        read_only_fields = ['id', 'portfolio_id', 'created', 'created_by', ]
+        read_only_fields = ['id', 'portfolio_id', 'created', ]
 
     def to_representation(self, instance):
         data = super(PortfolioSerializer, self).to_representation(instance)
         data['created_by'] = UserSerializer(instance=instance.created_by).data
         return data
+
+    def create(self, validated_data):
+        portfolio = Portfolio.objects.create(**validated_data)
+        return portfolio
