@@ -8,7 +8,7 @@ from graphene import (Mutation,
                       )
 
 from portfolio.gql.types import CategoryType, PortfolioType, TaskType
-from portfolio.models import Category, Task
+from portfolio.models import Category, Portfolio, Task
 from portfolio.serializers import CategorySerializer, PortfolioSerializer, TaskSerializer
 
 User = get_user_model()
@@ -108,3 +108,23 @@ class CreatePortfolio(Mutation):
         serializer = PortfolioSerializer(data=serializer_data)
         serializer.is_valid(raise_exception=True)
         return CreatePortfolio(portfolio=serializer.save())
+
+
+class UpdatePortfolio(Mutation):
+    """Graphql mutation to update a portfolio"""
+    class Arguments:
+        id = Int(required=True)
+        reference = String()
+        completed = DateTime()
+
+    portfolio = Field(PortfolioType)
+
+    @classmethod
+    @permission_required('portfolio.change_portfolio')
+    def mutate(cls, root, info, **kwargs):
+        portfolio_instance = Portfolio.objects.get(id=kwargs['id'])
+        # Don't change the created_by field
+        kwargs['created_by'] = portfolio_instance.created_by.id
+        serializer = PortfolioSerializer(instance=portfolio_instance, data=kwargs)
+        serializer.is_valid(raise_exception=True)
+        return UpdatePortfolio(portfolio=serializer.save())

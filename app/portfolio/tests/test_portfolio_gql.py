@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
+from django.utils import timezone
 from graphene_django.utils.testing import GraphQLTestCase
 from graphql_jwt.shortcuts import get_token
 
@@ -216,3 +217,55 @@ class PortfolioMutationTests(GraphQLTestCase):
         response = self.query(gql, headers=headers, variables=variables)
 
         self.assertEqual(response.json()['errors'][0]['message'], NO_PERMISSION)
+
+    def test_update_portfolio_with_perm_successful(self):
+        """Test updating a portfolio with correct permissions is successful"""
+        user = _sample_user()
+        permission = Permission.objects.get(name='Can change Portfolio')
+        user.user_permissions.add(permission)
+        token = get_token(user)
+        headers = {"HTTP_AUTHORIZATION": f"JWT {token}"}
+        portfolio = sample_portfolio(user=user)
+
+        # make sure we generate a new title
+        new_reference = portfolio.reference
+        while portfolio.reference is new_reference:
+            new_reference = sample_id(size=10)
+
+        new_completed_date = timezone.now().isoformat()
+
+        variables = {'id': portfolio.id,
+                     'reference': new_reference,
+                     'completed': new_completed_date
+                     }
+        gql = """
+              mutation updatePortfolio($id: Int!
+                                  $reference: String!,
+                                  $completed: DateTime!) {
+                updatePortfolio(id: $id,
+                           reference: $reference,
+                           completed: $completed){
+                    portfolio{
+                        id
+                        portfolioId
+                        reference
+                        created
+                        createdBy{
+                            id
+                            email
+                        }
+                        completed
+                        }
+                    }
+                }
+             """
+        response = self.query(gql, headers=headers, variables=variables)
+        updated_portfolio = response.json()['data']['updatePortfolio']['portfolio']
+
+        self.assertResponseNoErrors(response)
+        # Portfolio id should be the same
+        self.assertEqual(updated_portfolio['id'], portfolio.id)
+        # Portfolio reference should be updated
+        self.assertEqual(updated_portfolio['reference'], variables['reference'])
+        # Returned portfolio reference isn't the old portfolio model reference
+        self.assertNotEqual(updated_portfolio['reference'], portfolio.reference)

@@ -14,7 +14,7 @@ from portfolio.models import Category, Portfolio, Task
 from portfolio.gql.mutation import (CreateCategory,
                                     CreatePortfolio,
                                     CreateTask,
-                                    UpdateCategory,
+                                    UpdateCategory, UpdatePortfolio,
                                     UpdateTask)
 
 
@@ -86,6 +86,7 @@ class Mutation(ObjectType):
     update_category = UpdateCategory.Field()
 
     create_portfolio = CreatePortfolio.Field()
+    update_portfolio = UpdatePortfolio.Field()
 
 
 schema = Schema(query=Query, mutation=Mutation)
