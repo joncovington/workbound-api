@@ -61,7 +61,7 @@ class Query(ObjectType):
 
     # Portfolio queries
     portfolio = Field(PortfolioType, id=Int())
-    portfolios = List(PortfolioType, portfolio_id=String())
+    portfolios = List(PortfolioType, portfolio_id=String(), work_item_email=String())
 
     @permission_required('portfolio.view_portfolio')
     def resolve_portfolio(root, info, id):
@@ -69,12 +69,17 @@ class Query(ObjectType):
         return Portfolio.objects.get(id=id)
 
     @permission_required('portfolio.view_portfolio')
-    def resolve_portfolios(root, info, portfolio_id):
+    def resolve_portfolios(root, info, portfolio_id=None, work_item_email=None):
         if portfolio_id:
             filter = (
                 Q(portfolio_id__exact=portfolio_id)
             )
             return Portfolio.objects.filter(filter)
+        if work_item_email:
+            filter = (
+                Q(sections__workitems__assigned_to__email__icontains=work_item_email)
+            )
+            return Portfolio.objects.filter(filter).distinct()
         return Portfolio.objects.all()
 
 
