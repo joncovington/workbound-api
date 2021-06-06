@@ -97,6 +97,8 @@ class Task(models.Model):
     title = models.CharField(max_length=50)
     description = models.CharField(max_length=255)
     duration = models.PositiveSmallIntegerField(help_text='Typical duration of this task')
+    completion_days = models.PositiveSmallIntegerField(help_text='Expected days to complete \
+                                                       a WorkItem with this task')
     created = models.DateTimeField(auto_now_add=True, editable=False)
     created_by = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, blank=True)
     archived = models.DateTimeField(null=True, blank=True)

@@ -222,22 +222,26 @@ class WorkItemMutationTests(GraphQLTestCase):
         variables = {'title': sample_id(size=10),
                      'description': sample_id(size=20),
                      'duration': 10,
-                     'createdById': user.id
+                     'createdById': user.id,
+                     'completionDays': 7,
                      }
         gql = """
               mutation createTask($title: String!,
                                   $description: String!,
                                   $duration: Int!,
-                                  $createdById: Int!) {
+                                  $createdById: Int!,
+                                  $completionDays: Int!) {
                 createTask(title: $title,
                            description: $description,
                            duration: $duration,
-                           createdById: $createdById){
+                           createdById: $createdById,
+                           completionDays: $completionDays){
                     task{
                         id
                         title
                         description
                         duration
+                        completionDays
                         created
                         createdBy{
                             id
@@ -249,6 +253,7 @@ class WorkItemMutationTests(GraphQLTestCase):
                 }
              """
         response = self.query(gql, headers=headers, variables=variables)
+        print(response)
         task = response.json()['data']['createTask']['task']
 
         self.assertResponseNoErrors(response)
@@ -263,22 +268,26 @@ class WorkItemMutationTests(GraphQLTestCase):
         variables = {'title': sample_id(size=10),
                      'description': sample_id(size=20),
                      'duration': 10,
-                     'createdById': user.id
+                     'createdById': user.id,
+                     'completionDays': 7,
                      }
         gql = """
               mutation createTask($title: String!,
                                   $description: String!,
                                   $duration: Int!,
-                                  $createdById: Int!) {
+                                  $createdById: Int!,
+                                  $completionDays: Int!) {
                 createTask(title: $title,
                            description: $description,
                            duration: $duration,
-                           createdById: $createdById){
+                           createdById: $createdById,
+                           completionDays: $completionDays){
                     task{
                         id
                         title
                         description
                         duration
+                        completionDays
                         created
                         createdBy{
                             id
@@ -313,24 +322,28 @@ class WorkItemMutationTests(GraphQLTestCase):
                      'title': new_title,
                      'description': sample_id(size=20),
                      'duration': randrange(10),
-                     'archived': new_archived_date
+                     'archived': new_archived_date,
+                     'completionDays': 7,
                      }
         gql = """
               mutation updateTask($id: Int!
                                   $title: String!,
                                   $description: String!,
                                   $duration: Int!,
-                                  $archived: DateTime!) {
+                                  $archived: DateTime!,
+                                  $completionDays: Int!) {
                 updateTask(id: $id,
                            title: $title,
                            description: $description,
                            duration: $duration,
-                           archived: $archived){
+                           archived: $archived,
+                           completionDays: $completionDays){
                     task{
                         id
                         title
                         description
                         duration
+                        completionDays
                         created
                         createdBy{
                             id
@@ -366,25 +379,34 @@ class WorkItemMutationTests(GraphQLTestCase):
         while task.title is new_title:
             new_title = sample_id(size=10)
 
+        new_archived_date = timezone.now().isoformat()
+
         variables = {'id': task.id,
                      'title': new_title,
                      'description': sample_id(size=20),
                      'duration': randrange(10),
+                     'completionDays': 7,
+                     'archived': new_archived_date
                      }
         gql = """
               mutation updateTask($id: Int!
                                   $title: String!,
                                   $description: String!,
-                                  $duration: Int!) {
+                                  $duration: Int!,
+                                  $archived: DateTime!,
+                                  $completionDays: Int!) {
                 updateTask(id: $id,
                            title: $title,
                            description: $description,
-                           duration: $duration){
+                           duration: $duration,
+                           archived: $archived,
+                           completionDays: $completionDays){
                     task{
                         id
                         title
                         description
                         duration
+                        completionDays
                         created
                         createdBy{
                             id

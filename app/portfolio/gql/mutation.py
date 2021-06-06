@@ -21,6 +21,7 @@ class CreateTask(Mutation):
         description = String(required=True)
         duration = Int(required=True)
         created_by_id = Int(required=True)
+        completion_days = Int(required=True)
 
     task = Field(TaskType)
 
@@ -42,6 +43,7 @@ class UpdateTask(Mutation):
         description = String()
         duration = Int()
         archived = DateTime()
+        completion_days = Int()
 
     task = Field(TaskType)
 

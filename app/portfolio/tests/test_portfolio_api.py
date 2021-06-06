@@ -9,7 +9,7 @@ from django.utils.translation import ugettext_lazy as _
 from rest_framework.test import APIClient
 from rest_framework import status
 
-from portfolio.models import Portfolio
+from portfolio.models import Category, Portfolio
 from portfolio.serializers import PortfolioSerializer
 
 from utils.helpers import sample_id, sample_email
@@ -133,3 +133,18 @@ class PrivatePortfolioApiTests(TestCase):
         res = self.client.post(PORTFOLIO_URL, payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         self.assertEqual(res.data['meta'], meta)
+
+    def test_build_portfolio_from_task_category_payload(self):
+        """Test creating a new portfolio with sections and workitems from a payload of categories and tasks"""
+        pass
+        # category1 = Category.objects.create(title='Department One', description='', created_by=self.user)
+        # category2 = Category.objects.create(title='Department Two', description='', created_by=self.user)
+
+        # payload = {
+        #     'build': [
+        #         {
+        #             'category': category1.id,
+        #             'tasks': [],
+        #         }
+        #     ]
+        # }

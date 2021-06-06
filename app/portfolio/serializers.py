@@ -17,6 +17,7 @@ class TaskSerializer(serializers.ModelSerializer):
             'title',
             'description',
             'duration',
+            'completion_days',
             'created',
             'created_by',
             'archived',

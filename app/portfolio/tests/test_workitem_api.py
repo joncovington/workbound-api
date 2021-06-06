@@ -1,3 +1,4 @@
+import random
 from django.test import TestCase
 from django.contrib.auth.models import Permission
 from django.urls import reverse
@@ -43,7 +44,8 @@ def sample_task(*args, **kwargs):
         title=sample_id(),
         description='',
         created_by=user,
-        duration=1
+        duration=1,
+        completion_days=random.randint(1, 14)
     )
 
 
@@ -117,7 +119,8 @@ class PrivateWorkItemApiTests(TestCase):
             'title': 'new_task',
             'description': 'blah blah blah',
             'duration': 1,
-            'created_by': self.user.id
+            'created_by': self.user.id,
+            'completion_days': 7
         }
         permission = Permission.objects.get(name='Can add Task')
         self.user.user_permissions.add(permission)
@@ -134,7 +137,8 @@ class PrivateWorkItemApiTests(TestCase):
         payload = {
             'title': 'new_task',
             'description': 'blah blah blah',
-            'duration': 1
+            'duration': 1,
+            'completion_days': 7
         }
 
         res = self.client.post(TASK_URL, payload)

@@ -86,6 +86,7 @@ class TestWorkModels(TestCase):
             description='Test description goes here',
             created_by=self.user,
             duration=1,
+            completion_days=7,
         )
 
         self.assertEqual(bool(task.archived), False)
@@ -101,6 +102,7 @@ class TestWorkModels(TestCase):
             description='Test description goes here',
             created_by=self.user,
             duration=1,
+            completion_days=7,
         )
         workitem = WorkItem.objects.create(
             task=task,
