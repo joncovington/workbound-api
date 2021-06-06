@@ -9,7 +9,7 @@ from django.utils.translation import ugettext_lazy as _
 from rest_framework.test import APIClient
 from rest_framework import status
 
-from portfolio.models import Category, Portfolio
+from portfolio.models import Portfolio
 from portfolio.serializers import PortfolioSerializer
 
 from utils.helpers import sample_id, sample_email
