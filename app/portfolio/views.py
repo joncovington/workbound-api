@@ -1,8 +1,6 @@
-import json
 from django.contrib.auth import get_user_model
-from rest_framework import viewsets, schemas
+from rest_framework import viewsets
 from rest_framework.authentication import TokenAuthentication
-from rest_framework.generics import CreateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework import response, status
@@ -106,7 +104,7 @@ class BuildView(APIView):
                 section = Section.objects.create(created_by=user, category=category, portfolio=portfolio)
                 for task_id in build['tasks']:
                     task = Task.objects.get(id=task_id)
-                    workitem = WorkItem.objects.create(section=section, task=task, created_by=user)
+                    WorkItem.objects.create(section=section, task=task, created_by=user)
             serializer = PortfolioSerializer(portfolio)
             return response.Response(serializer.data, status=status.HTTP_201_CREATED)
         return response.Response(status=status.HTTP_400_BAD_REQUEST)

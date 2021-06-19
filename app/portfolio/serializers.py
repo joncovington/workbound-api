@@ -120,5 +120,7 @@ class PortfolioSerializer(serializers.ModelSerializer):
         portfolio = Portfolio.objects.create(**validated_data)
         return portfolio
 
+
 class BuildSerializer(serializers.Serializer):
+
     build = serializers.JSONField()

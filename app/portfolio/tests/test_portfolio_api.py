@@ -181,3 +181,5 @@ class PrivatePortfolioApiTests(TestCase):
                 for x in range(random.randint(1, len(categories)))
             ]
         }
+
+        pprint(payload)
