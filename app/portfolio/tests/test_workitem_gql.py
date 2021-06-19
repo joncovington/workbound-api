@@ -253,7 +253,6 @@ class WorkItemMutationTests(GraphQLTestCase):
                 }
              """
         response = self.query(gql, headers=headers, variables=variables)
-        print(response)
         task = response.json()['data']['createTask']['task']
 
         self.assertResponseNoErrors(response)

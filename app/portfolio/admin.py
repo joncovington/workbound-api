@@ -1,5 +1,9 @@
 from django.contrib import admin
+from django.contrib.auth.models import Permission
 from portfolio.models import Portfolio, Category, Section, Task, WorkItem
+
+
+admin.site.register(Permission)
 
 
 @admin.register(Portfolio)

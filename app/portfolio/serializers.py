@@ -14,6 +14,7 @@ class TaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
         fields = (
+            'id',
             'title',
             'description',
             'duration',
@@ -34,6 +35,7 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = (
+            'id',
             'title',
             'description',
             'created',
@@ -54,6 +56,7 @@ class SectionSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'section_id',
+            'order',
             'portfolio',
             'category',
             'created',
@@ -67,6 +70,7 @@ class SectionSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         data = super(SectionSerializer, self).to_representation(instance)
         data['created_by'] = UserSerializer(instance=instance.created_by).data
+        data['category'] = CategorySerializer(instance=instance.category).data
         return data
 
 
@@ -77,6 +81,7 @@ class WorkItemSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'workitem_id',
+            'order',
             'section',
             'task',
             'created',
@@ -114,3 +119,6 @@ class PortfolioSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         portfolio = Portfolio.objects.create(**validated_data)
         return portfolio
+
+class BuildSerializer(serializers.Serializer):
+    build = serializers.JSONField()

@@ -1,3 +1,4 @@
+from django.contrib.auth.models import Permission
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework.permissions import BasePermission, DjangoModelPermissions
@@ -26,3 +27,14 @@ class IsAssigned(BasePermission):
         )
 
         return obj.assigned_to == request.user or check_role
+
+
+class BuildPermission(BasePermission):
+    """
+    Checks for user permission to allow a build using categories and tasks
+    """
+    message = _('You do not have permissions to perform this action')
+
+    def has_permission(self, request, view):
+        permission = Permission.objects.get(name='Can add Portfolio')
+        return request.user.has_perm(permission)

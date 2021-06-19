@@ -1,16 +1,23 @@
-from rest_framework import viewsets
+import json
+from django.contrib.auth import get_user_model
+from rest_framework import viewsets, schemas
 from rest_framework.authentication import TokenAuthentication
+from rest_framework.generics import CreateAPIView
 from rest_framework.permissions import IsAuthenticated
-
+from rest_framework.views import APIView
+from rest_framework import response, status
 from portfolio.models import Portfolio, Section, Category, Task, WorkItem
-from portfolio.serializers import (PortfolioSerializer,
+from portfolio.serializers import (BuildSerializer, PortfolioSerializer,
                                    SectionSerializer,
                                    CategorySerializer,
                                    TaskSerializer,
                                    WorkItemSerializer
                                    )
-from portfolio.permissions import CustomDjangoModelPermissions
+from portfolio.permissions import BuildPermission, CustomDjangoModelPermissions
 from portfolio.filters import PortfolioFilter, SectionFilter, TaskFilter, CategoryFilter, WorkItemFilter
+
+
+User = get_user_model()
 
 
 class PortfolioViewSet(viewsets.ModelViewSet):
@@ -70,3 +77,36 @@ class WorkItemViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
+
+
+class BuildView(APIView):
+    permission_classes = (IsAuthenticated, BuildPermission)
+    serializer_class = BuildSerializer
+
+    # def get(self, request, *args, **kwargs):
+    #     payload = {
+    #         'build': [
+    #             {
+    #                 'category': 1,
+    #                 'tasks': [1, 2],
+    #             }
+    #         ]
+    #     }
+    #     data = json.dumps(payload)
+    #     return response.Response(data, status=status.HTTP_200_OK)
+
+    def post(self, request, *args, **kwargs):
+        user = User.objects.get(email='admin@workbound.info')
+        print(request.data)
+        build = request.data['build']
+        if len(build) > 0:
+            portfolio = Portfolio.objects.create(created_by=user)
+            for section in build:
+                category = Category.objects.get(id=int(build['category']))
+                section = Section.objects.create(created_by=user, category=category, portfolio=portfolio)
+                for task_id in build['tasks']:
+                    task = Task.objects.get(id=task_id)
+                    workitem = WorkItem.objects.create(section=section, task=task, created_by=user)
+            serializer = PortfolioSerializer(portfolio)
+            return response.Response(serializer.data, status=status.HTTP_201_CREATED)
+        return response.Response(status=status.HTTP_400_BAD_REQUEST)

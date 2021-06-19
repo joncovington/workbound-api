@@ -1,7 +1,9 @@
 import json
-
+import random
+from pprint import pprint
 from django.test import TestCase
 from django.contrib.auth.models import Permission
+from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext_lazy as _
@@ -9,7 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 from rest_framework.test import APIClient
 from rest_framework import status
 
-from portfolio.models import Portfolio
+from portfolio.models import Portfolio, Task, Category
 from portfolio.serializers import PortfolioSerializer
 
 from utils.helpers import sample_id, sample_email
@@ -41,6 +43,30 @@ def sample_portfolio(**kwargs) -> Portfolio:
     return Portfolio.objects.create(
         reference=sample_id(),
         created_by=user,
+    )
+
+
+def sample_task(*args, **kwargs):
+    """Returns a sample Task object for testing"""
+    user = _get_user(**kwargs)
+
+    return Task.objects.create(
+        title=sample_id(),
+        description='',
+        created_by=user,
+        duration=1,
+        completion_days=random.randint(1, 14)
+    )
+
+
+def sample_category(*args, **kwargs):
+    """Returns a sample Category object for testing"""
+    user = _get_user(**kwargs)
+
+    return Category.objects.create(
+        title=sample_id(),
+        description='',
+        created_by=user
     )
 
 
@@ -136,15 +162,22 @@ class PrivatePortfolioApiTests(TestCase):
 
     def test_build_portfolio_from_task_category_payload(self):
         """Test creating a new portfolio with sections and workitems from a payload of categories and tasks"""
-        pass
-        # category1 = Category.objects.create(title='Department One', description='', created_by=self.user)
-        # category2 = Category.objects.create(title='Department Two', description='', created_by=self.user)
+        categories = [sample_category().id for i in range(5)]
+        random.shuffle(categories)
+        tasks = [sample_task().id for i in range(5)]
+        ct = ContentType.objects.get_for_model(Portfolio)
 
-        # payload = {
-        #     'build': [
-        #         {
-        #             'category': category1.id,
-        #             'tasks': [],
-        #         }
-        #     ]
-        # }
+        permission = Permission.objects.create(codename='build_portfolio',
+                                               content_type=ct,
+                                               name='Can build Portfolio'
+                                               )
+        self.user.user_permissions.add(permission)
+        payload = {
+            'build': [
+                {
+                    'category': categories.pop(),
+                    'tasks': [task for task in random.sample(tasks, random.randint(1, 5))],
+                }
+                for x in range(random.randint(1, len(categories)))
+            ]
+        }

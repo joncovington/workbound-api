@@ -14,4 +14,5 @@ router.register('workitem', views.WorkItemViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('build', views.BuildView.as_view())
 ]

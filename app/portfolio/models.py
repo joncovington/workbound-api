@@ -67,12 +67,14 @@ class Section(models.Model):
     created_by = models.ForeignKey(User, models.CASCADE)
     completed = models.DateTimeField(null=True, blank=True, editable=False)
     meta = models.JSONField(null=True, blank=True)
+    order = models.FloatField(null=True, blank=True)
 
     class Meta:
         """Meta definition for Section."""
 
         verbose_name = 'Section'
         verbose_name_plural = 'Sections'
+        ordering = ['order']
 
     @property
     def workitem_count(self):
@@ -82,6 +84,8 @@ class Section(models.Model):
         if not self.section_id:
             new_id = make_id()
             self.section_id = self.PREFIX + new_id
+        if not self.order:
+            self.order = max([x.order for x in self.portfolio.sections.all()], default=0.0) + 0.1
         return super(Section, self).save(*args, **kwargs)
 
     def __str__(self) -> str:
@@ -128,17 +132,22 @@ class WorkItem(models.Model):
     completed = models.DateTimeField(null=True, blank=True, editable=False)
     meta = models.JSONField(null=True, blank=True)
     assigned_to = models.ForeignKey(User, models.DO_NOTHING, null=True, blank=True, related_name='assigned_users')
+    expected_date = models.DateTimeField(null=True, blank=True)
+    order = models.FloatField(null=True, blank=True)
 
     class Meta:
         """Meta definition for WorkItem."""
 
         verbose_name = 'Work Item'
         verbose_name_plural = 'Work Items'
+        ordering = ['order']
 
     def save(self, *args, **kwargs):
         if not self.workitem_id:
             new_id = make_id()
             self.workitem_id = self.PREFIX + new_id
+        if not self.order:
+            self.order = max([x.order for x in self.section.workitems.all()], default=0.0) + 0.1
         return super(WorkItem, self).save(*args, **kwargs)
 
     def __str__(self) -> str:
