@@ -4,6 +4,7 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework import response, status
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from portfolio.models import Portfolio, Section, Category, Task, WorkItem
 from portfolio.serializers import (BuildSerializer, PortfolioSerializer,
                                    SectionSerializer,
@@ -57,7 +58,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
 class TaskViewSet(viewsets.ModelViewSet):
     """Manage Tasks in the database"""
 
-    authentication_classes = (TokenAuthentication, )
+    authentication_classes = (JWTAuthentication, )
     permission_classes = (IsAuthenticated, CustomDjangoModelPermissions)
     queryset = Task.objects.all()
     serializer_class = TaskSerializer

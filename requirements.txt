@@ -8,3 +8,4 @@ pyyaml
 uritemplate
 coreapi
 django-cors-headers
+djangorestframework-simplejwt
