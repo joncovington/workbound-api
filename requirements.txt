@@ -9,3 +9,6 @@ uritemplate
 coreapi
 django-cors-headers
 djangorestframework-simplejwt
+django-phonenumber-field[phonenumberslite]
+Pillow>=8.2.0
+django-cleanup>=5.2.0

@@ -30,6 +30,12 @@ class UserAdmin(BaseUserAdmin):
             'fields': ('email', 'password1', 'password2')
         }),
     )
+class ProfileAdmin(admin.ModelAdmin):
+    list_display = ['view_user_email', 'first_name', 'last_name']
+
+    def view_user_email(self, obj):
+        return obj.user.email
 
 
+admin.site.register(models.Profile, ProfileAdmin)
 admin.site.register(models.CustomUser, UserAdmin)
