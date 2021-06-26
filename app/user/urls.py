@@ -17,6 +17,7 @@ urlpatterns = [
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('me/', views.ManageUserView.as_view(), name='me'),
+    path('me/update/', views.ProfileView.as_view(), name='profile'),
     path('perms/', views.custom_user_model_permissions, name='task_perms'),
     path('', include(router.urls)),
     path('my-roles/', views.RoleUserListView.as_view(), name='my_roles')

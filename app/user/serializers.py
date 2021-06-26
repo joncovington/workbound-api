@@ -2,15 +2,23 @@ from django.contrib.auth import get_user_model, authenticate
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers
 
+from core.models import Profile
 from user.models import Role
+
+class ProfileSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Profile
+        exclude = ['created_at', 'updated_at', 'user']
 
 
 class UserSerializer(serializers.ModelSerializer):
     """Serializer for users object"""
+    profile = ProfileSerializer(read_only=True)
 
     class Meta:
         model = get_user_model()
-        fields = ('id', 'email', 'password')
+        fields = ('id', 'email', 'password', 'profile')
         extra_kwargs = {
             'password': {
                 'write_only': True,
@@ -32,31 +40,6 @@ class UserSerializer(serializers.ModelSerializer):
             user.save()
 
         return user
-
-# class AuthTokenSerializer(serializers.Serializer):
-#     """Serializer for the user authentication object"""
-#     email = serializers.CharField()
-#     password = serializers.CharField(
-#         style={'input_type': 'password'},
-#         trim_whitespace=False
-#     )
-
-#     def validate(self, attrs):
-#         """Validate and authenticate user"""
-#         email = attrs.get('email')
-#         password = attrs.get('password')
-
-#         user = authenticate(
-#             request=self.context.get('request'),
-#             username=email,
-#             password=password,
-#         )
-#         if not user:
-#             msg = _('Unable to authenticate with provided credentials')
-#             raise serializers.ValidationError(msg, code='authentication')
-
-#         attrs['user'] = user
-#         return attrs
 
 
 class RoleSerializer(serializers.ModelSerializer):

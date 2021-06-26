@@ -3,12 +3,13 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.authentication import TokenAuthentication
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
-from rest_framework.settings import api_settings
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.exceptions import ValidationError
 from user.models import Role
 
-from user.serializers import UserSerializer, RoleSerializer
+from user.serializers import ProfileSerializer, UserSerializer, RoleSerializer
 
 def get_perm_by_model_name(name, user):
     perms = list(x.replace('portfolio.', '') for x in user.get_all_permissions() if x.endswith(f'_{name}'))
@@ -65,6 +66,29 @@ class ManageUserView(generics.RetrieveUpdateAPIView):
     def get(self, request, *args, **kwargs):
         user = self.get_object()
         return Response(self.serializer_class(user).data)
+
+
+class ProfileView(generics.UpdateAPIView):
+    """Manage the authenticated user"""
+    serializer_class = ProfileSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
+
+    def get_object(self):
+        return self.request.user.profile
+
+    def update(self, request, *args, **kwargs):
+        serializer = self.serializer_class(self.get_object(), data=request.data, partial=True)
+        try:
+            serializer.is_valid()
+            serializer.save()
+            response_data = UserSerializer(instance=self.request.user).data
+            return Response(response_data, status=status.HTTP_200_OK)
+        except ValidationError:
+            return Response({"errors": (serializer.errors,)},
+                            status=status.HTTP_400_BAD_REQUEST)
+
 
 class RoleViewSet(viewsets.GenericViewSet,
                   mixins.ListModelMixin,
