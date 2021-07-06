@@ -18,11 +18,24 @@ def get_perm_by_model_name(name, user):
 @api_view(['GET', ])
 @authentication_classes([JWTAuthentication])
 @permission_classes([permissions.IsAuthenticated])
-def custom_user_model_permissions(request):
-    print(request.data)
-    task_perms = get_perm_by_model_name(name=request.data['perm'], user=request.user)
+def custom_user_model_permissions(request, model):
+    perms = get_perm_by_model_name(name=model, user=request.user)
 
-    return Response(status=status.HTTP_200_OK, data={'task_permissions': task_perms})
+    return Response(status=status.HTTP_200_OK, data={f'{model}_permissions': perms})
+
+
+@api_view(['GET', ])
+@authentication_classes([JWTAuthentication])
+@permission_classes([permissions.IsAuthenticated])
+def retrieve_all_permissions(request):
+    all_perms = []
+    models = ['task', 'category']
+    for model in models:
+        perms = get_perm_by_model_name(name=model, user=request.user)
+        perms.sort()
+        all_perms.append({model: perms})
+    return Response(status=status.HTTP_200_OK, data=all_perms)
+
 
 class RolePermission(permissions.BasePermission):
     def has_permission(self, request, view):

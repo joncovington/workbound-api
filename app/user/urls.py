@@ -18,7 +18,8 @@ urlpatterns = [
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('me/', views.ManageUserView.as_view(), name='me'),
     path('me/update/', views.ProfileView.as_view(), name='profile'),
-    path('perms/', views.custom_user_model_permissions, name='task_perms'),
+    path('perms/', views.retrieve_all_permissions, name='all_perms'),
+    path('perms/<str:model>', views.custom_user_model_permissions, name='model_perms'),
     path('', include(router.urls)),
     path('my-roles/', views.RoleUserListView.as_view(), name='my_roles')
 ]
