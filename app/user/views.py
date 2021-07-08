@@ -1,3 +1,4 @@
+from django.contrib.auth.models import Permission
 from rest_framework import generics, permissions, viewsets, mixins, status
 from rest_framework.views import APIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -13,7 +14,10 @@ from user.serializers import ProfileSerializer, UserSerializer, RoleSerializer
 
 def get_perm_by_model_name(name, user):
     perms = list(x.replace('portfolio.', '') for x in user.get_all_permissions() if x.endswith(f'_{name}'))
-    return perms
+    perms.sort()
+    perm_names = [x.name for x in Permission.objects.filter(codename__in=perms)]
+    perm_names.sort()
+    return (dict(zip(perms, perm_names)))
 
 @api_view(['GET', ])
 @authentication_classes([JWTAuthentication])
@@ -29,10 +33,9 @@ def custom_user_model_permissions(request, model):
 @permission_classes([permissions.IsAuthenticated])
 def retrieve_all_permissions(request):
     all_perms = []
-    models = ['task', 'category']
+    models = ['task', 'category', 'workitem', 'section', 'portfolio']
     for model in models:
         perms = get_perm_by_model_name(name=model, user=request.user)
-        perms.sort()
         all_perms.append({model: perms})
     return Response(status=status.HTTP_200_OK, data=all_perms)
 
