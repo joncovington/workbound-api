@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
 from portfolio.models import Portfolio, Section, Category, Task, WorkItem
+from core.models import Profile
 from user.serializers import UserSerializer
 
 
@@ -29,6 +30,10 @@ class TaskSerializer(serializers.ModelSerializer):
         task = Task.objects.create(**validated_data)
         return task
 
+    def to_representation(self, instance):
+        data = super(TaskSerializer, self).to_representation(instance)
+        data['created_by'] = UserSerializer(instance=instance.created_by).data
+        return data
 
 class CategorySerializer(serializers.ModelSerializer):
 

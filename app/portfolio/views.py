@@ -1,10 +1,11 @@
 from django.contrib.auth import get_user_model
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
-from rest_framework import response, status
+from rest_framework.response import Response
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.pagination import PageNumberPagination
 from portfolio.models import Portfolio, Section, Category, Task, WorkItem
 from portfolio.serializers import (BuildSerializer, PortfolioSerializer,
                                    SectionSerializer,
@@ -18,6 +19,8 @@ from portfolio.filters import PortfolioFilter, SectionFilter, TaskFilter, Catego
 
 User = get_user_model()
 
+class CustomPageNumberPagination(PageNumberPagination):
+    page_size_query_param = 'size'  # items per page
 
 class PortfolioViewSet(viewsets.ModelViewSet):
     """Manage Portfolios in the database"""
@@ -60,7 +63,8 @@ class TaskViewSet(viewsets.ModelViewSet):
 
     authentication_classes = (JWTAuthentication, )
     permission_classes = (IsAuthenticated, CustomDjangoModelPermissions)
-    queryset = Task.objects.all()
+    pagination_class = CustomPageNumberPagination
+    queryset = Task.objects.all().order_by('title')
     serializer_class = TaskSerializer
     filterset_class = TaskFilter
 
@@ -107,5 +111,5 @@ class BuildView(APIView):
                     task = Task.objects.get(id=task_id)
                     WorkItem.objects.create(section=section, task=task, created_by=user)
             serializer = PortfolioSerializer(portfolio)
-            return response.Response(serializer.data, status=status.HTTP_201_CREATED)
-        return response.Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(status=status.HTTP_400_BAD_REQUEST)

@@ -11,7 +11,6 @@ class ProfileSerializer(serializers.ModelSerializer):
         model = Profile
         exclude = ['created_at', 'updated_at', 'user']
 
-
 class UserSerializer(serializers.ModelSerializer):
     """Serializer for users object"""
     profile = ProfileSerializer(read_only=True)

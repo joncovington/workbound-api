@@ -15,8 +15,7 @@ from user.serializers import ProfileSerializer, UserSerializer, RoleSerializer
 def get_perm_by_model_name(name, user):
     perms = list(x.replace('portfolio.', '') for x in user.get_all_permissions() if x.endswith(f'_{name}'))
     perms.sort()
-    perm_names = [x.name for x in Permission.objects.filter(codename__in=perms)]
-    perm_names.sort()
+    perm_names = [{'verbose': x.name, 'status': True} for x in Permission.objects.filter(codename__in=perms)]
     return (dict(zip(perms, perm_names)))
 
 @api_view(['GET', ])
@@ -58,13 +57,16 @@ class CreateUserView(generics.CreateAPIView):
 
 
 class BlacklistTokenView(APIView):
+    authentication_classes = []
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
+        print(request.data['refresh_token'])
         try:
             refresh_token = request.data['refresh_token']
             token = RefreshToken(refresh_token)
             token.blacklist()
+            return Response(data={'status': 'Logout Successful'}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
