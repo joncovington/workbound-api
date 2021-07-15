@@ -1,15 +1,16 @@
-from django.contrib.auth import get_user_model, authenticate
-from django.utils.translation import ugettext_lazy as _
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
 from core.models import Profile
 from user.models import Role
+
 
 class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
         exclude = ['created_at', 'updated_at', 'user']
+
 
 class UserSerializer(serializers.ModelSerializer):
     """Serializer for users object"""

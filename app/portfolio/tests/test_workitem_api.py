@@ -98,8 +98,8 @@ class PrivateWorkItemApiTests(TestCase):
         serializer = TaskSerializer(task_qs, many=True)
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data, serializer.data)
-        self.assertEqual(len(res.data), len(task_qs))
+        self.assertEqual(res.data['results'], serializer.data)
+        self.assertEqual(len(res.data['results']), len(task_qs))
         self.assertTrue(len(tasks))
 
     def test_retrieve_tasks_without_permission(self):
@@ -168,8 +168,8 @@ class PrivateWorkItemApiTests(TestCase):
         serializer = WorkItemSerializer(workitem_qs, many=True)
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data, serializer.data)
-        self.assertEqual(len(res.data), len(workitem_qs))
+        self.assertEqual(res.data['results'], serializer.data)
+        self.assertEqual(len(res.data['results']), len(workitem_qs))
         self.assertTrue(len(workitems))
 
     def test_retrieve_workitem_without_permission_fails(self):

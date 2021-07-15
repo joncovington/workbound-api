@@ -79,8 +79,8 @@ class PrivateRoleApiTests(TestCase):
         serializer = RoleSerializer(roles, many=True)
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data, serializer.data)
-        self.assertEqual(len(res.data), 2)
+        self.assertEqual(res.data['results'], serializer.data)
+        self.assertEqual(len(res.data['results']), 2)
 
     def test_retrieve_roles_without_permissions(self):
         """Test retrieving roles while user doesn't have permissions"""

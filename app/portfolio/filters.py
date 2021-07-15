@@ -10,6 +10,7 @@ class TaskFilter(django_filters.FilterSet):
     class Meta:
         model = Task
         fields = ['id', 'title', 'description', 'duration', ]
+        ordering = ('title')
 
 
 class CategoryFilter(django_filters.FilterSet):

@@ -14,5 +14,5 @@ router.register('workitem', views.WorkItemViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('build', views.BuildView.as_view())
+    path('alt-task/', views.AltTaskViewSet.as_view({'get': 'list'}), name='alt-task-list'),
 ]

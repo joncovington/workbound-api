@@ -21,6 +21,7 @@ class Portfolio(models.Model):
 
         verbose_name = 'Portfolio'
         verbose_name_plural = 'Portfolios'
+        ordering = ['id']
 
     def save(self, *args, **kwargs):
         if not self.portfolio_id:
@@ -49,6 +50,7 @@ class Category(models.Model):
 
         verbose_name = 'Category'
         verbose_name_plural = 'Categories'
+        ordering = ['id']
 
     def __str__(self) -> str:
         return self.title
@@ -112,6 +114,7 @@ class Task(models.Model):
 
         verbose_name = 'Task'
         verbose_name_plural = 'Tasks'
+        ordering = ['title']
 
     def __str__(self):
         """Unicode representation of Task."""
@@ -140,7 +143,7 @@ class WorkItem(models.Model):
 
         verbose_name = 'Work Item'
         verbose_name_plural = 'Work Items'
-        ordering = ['order']
+        ordering = ['order', 'id']
 
     def save(self, *args, **kwargs):
         if not self.workitem_id:

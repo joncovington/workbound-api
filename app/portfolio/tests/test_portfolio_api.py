@@ -1,9 +1,7 @@
 import json
 import random
-from pprint import pprint
 from django.test import TestCase
 from django.contrib.auth.models import Permission
-from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext_lazy as _
@@ -106,9 +104,9 @@ class PrivatePortfolioApiTests(TestCase):
         serializer = PortfolioSerializer(portfolios_qs, many=True)
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data, serializer.data)
+        self.assertEqual(res.data['results'], serializer.data)
         self.assertTrue(len(portfolios))
-        self.assertEqual(len(res.data), len(portfolios_qs))
+        self.assertEqual(len(res.data['results']), len(portfolios_qs))
 
     def test_retrieve_portfolios_without_permission(self):
         """Test retrieving portfolios without correct permissions"""
@@ -159,27 +157,3 @@ class PrivatePortfolioApiTests(TestCase):
         res = self.client.post(PORTFOLIO_URL, payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         self.assertEqual(res.data['meta'], meta)
-
-    def test_build_portfolio_from_task_category_payload(self):
-        """Test creating a new portfolio with sections and workitems from a payload of categories and tasks"""
-        categories = [sample_category().id for i in range(5)]
-        random.shuffle(categories)
-        tasks = [sample_task().id for i in range(5)]
-        ct = ContentType.objects.get_for_model(Portfolio)
-
-        permission = Permission.objects.create(codename='build_portfolio',
-                                               content_type=ct,
-                                               name='Can build Portfolio'
-                                               )
-        self.user.user_permissions.add(permission)
-        payload = {
-            'build': [
-                {
-                    'category': categories.pop(),
-                    'tasks': [task for task in random.sample(tasks, random.randint(1, 5))],
-                }
-                for x in range(random.randint(1, len(categories)))
-            ]
-        }
-
-        pprint(payload)

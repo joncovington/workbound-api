@@ -1,6 +1,5 @@
 from django.contrib.auth import get_user_model
 from django.db import models
-from django.utils.translation import gettext_lazy as _
 
 from portfolio.models import Category
 
@@ -22,6 +21,7 @@ class Role(models.Model):
 
     class Meta:
         unique_together = ['user', 'category', 'role_type']
+        ordering = ['id']
 
     def __str__(self) -> str:
         return f'{self.user.email} | {self.category} | {self.role_type.name}'

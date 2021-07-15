@@ -30,6 +30,8 @@ class UserAdmin(BaseUserAdmin):
             'fields': ('email', 'password1', 'password2')
         }),
     )
+
+
 class ProfileAdmin(admin.ModelAdmin):
     list_display = ['view_user_email', 'first_name', 'last_name']
 

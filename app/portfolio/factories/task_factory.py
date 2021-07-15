@@ -4,6 +4,7 @@ from faker import Faker
 from portfolio.models import Task
 from core.factories.user_factory import SuperUserFactory
 
+
 def get_title():
     '''Returns a string containing one or two words'''
     FAKE = Faker()
@@ -11,7 +12,7 @@ def get_title():
     title = ''
     for word in title_tuple:
         title = title + f' {word}'
-    title.lstrip()
+    title = title.lstrip()
     return title
 
 

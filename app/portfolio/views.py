@@ -1,26 +1,29 @@
 from django.contrib.auth import get_user_model
+from django.utils import timezone
 from rest_framework import viewsets, status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.filters import OrderingFilter, SearchFilter
 from portfolio.models import Portfolio, Section, Category, Task, WorkItem
-from portfolio.serializers import (BuildSerializer, PortfolioSerializer,
+from portfolio.serializers import (PortfolioSerializer,
                                    SectionSerializer,
                                    CategorySerializer,
                                    TaskSerializer,
                                    WorkItemSerializer
                                    )
-from portfolio.permissions import BuildPermission, CustomDjangoModelPermissions
-from portfolio.filters import PortfolioFilter, SectionFilter, TaskFilter, CategoryFilter, WorkItemFilter
+from portfolio.permissions import CustomDjangoModelPermissions
+from portfolio.filters import PortfolioFilter, SectionFilter, CategoryFilter, WorkItemFilter
 
 
 User = get_user_model()
 
+
 class CustomPageNumberPagination(PageNumberPagination):
     page_size_query_param = 'size'  # items per page
+
 
 class PortfolioViewSet(viewsets.ModelViewSet):
     """Manage Portfolios in the database"""
@@ -64,9 +67,46 @@ class TaskViewSet(viewsets.ModelViewSet):
     authentication_classes = (JWTAuthentication, )
     permission_classes = (IsAuthenticated, CustomDjangoModelPermissions)
     pagination_class = CustomPageNumberPagination
-    queryset = Task.objects.all().order_by('title')
+    queryset = Task.objects.all()
     serializer_class = TaskSerializer
-    filterset_class = TaskFilter
+    filter_backends = [OrderingFilter, SearchFilter]
+    filter_fields = ('title', )
+    search_fields = ('title', )
+    ordering = ('title', )
+
+    def filter_queryset(self, queryset):
+        queryset = super(TaskViewSet, self).filter_queryset(queryset)
+        print(self.action)
+        queryset = queryset.filter(archived=None)
+        return queryset
+
+    def perform_create(self, serializer):
+        user_id = self.request.data['created_by']
+        user = User.objects.get(id=user_id)
+        serializer.save(created_by=user)
+
+    def destroy(self, request, *args, **kwargs):
+        task = self.get_object()
+        task.archived = timezone.now()
+        task.save()
+        return Response(data={'status': f'Task {task.id} has been archived'})
+
+
+class AltTaskViewSet(viewsets.GenericViewSet):
+    authentication_classes = (JWTAuthentication, )
+    permission_classes = (IsAuthenticated, CustomDjangoModelPermissions)
+    pagination_class = CustomPageNumberPagination
+    filter_backends = [OrderingFilter, SearchFilter]
+    ordering = ('title',)
+    search_fields = ('title', )
+    queryset = Task.objects.all().filter(archived=None)
+
+    def list(self, request):
+        queryset = self.paginate_queryset(self.filter_queryset(self.get_queryset()))
+        data = [x.id for x in queryset]
+        print(data)
+        print(type(data))
+        return Response(data={'tasks': data}, status=status.HTTP_200_OK)
 
 
 class WorkItemViewSet(viewsets.ModelViewSet):
@@ -80,36 +120,3 @@ class WorkItemViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
-
-
-class BuildView(APIView):
-    permission_classes = (IsAuthenticated, BuildPermission)
-    serializer_class = BuildSerializer
-
-    # def get(self, request, *args, **kwargs):
-    #     payload = {
-    #         'build': [
-    #             {
-    #                 'category': 1,
-    #                 'tasks': [1, 2],
-    #             }
-    #         ]
-    #     }
-    #     data = json.dumps(payload)
-    #     return response.Response(data, status=status.HTTP_200_OK)
-
-    def post(self, request, *args, **kwargs):
-        user = User.objects.get(email='admin@workbound.info')
-        print(request.data)
-        build = request.data['build']
-        if len(build) > 0:
-            portfolio = Portfolio.objects.create(created_by=user)
-            for section in build:
-                category = Category.objects.get(id=int(build['category']))
-                section = Section.objects.create(created_by=user, category=category, portfolio=portfolio)
-                for task_id in build['tasks']:
-                    task = Task.objects.get(id=task_id)
-                    WorkItem.objects.create(section=section, task=task, created_by=user)
-            serializer = PortfolioSerializer(portfolio)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(status=status.HTTP_400_BAD_REQUEST)

@@ -10,7 +10,7 @@ from phonenumber_field.modelfields import PhoneNumberField
 from core.managers import CustomUserManager
 
 # to automatically create one to one object
-from django.db.models.signals import post_save, pre_save
+from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.core.files.uploadedfile import InMemoryUploadedFile
 
@@ -32,6 +32,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+
 
 class Profile(models.Model):
 
@@ -90,6 +91,7 @@ class Profile(models.Model):
         if not self.image:
             self.thumbnail = None
         super(Profile, self).save(*args, **kwargs)
+
 
 @receiver(post_save, sender=CustomUser)
 def create_profile(sender, instance, created, **kwargs):
