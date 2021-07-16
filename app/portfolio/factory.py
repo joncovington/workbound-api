@@ -2,10 +2,10 @@ import factory
 from random import randint
 from faker import Faker
 from portfolio.models import Task
-from core.factories.user_factory import SuperUserFactory
+from core.factory import SuperUserFactory
 
 
-def get_title():
+def get_title() -> str:
     '''Returns a string containing one or two words'''
     FAKE = Faker()
     title_tuple = FAKE.words(nb=randint(1, 2))

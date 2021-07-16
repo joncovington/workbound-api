@@ -76,7 +76,6 @@ class TaskViewSet(viewsets.ModelViewSet):
 
     def filter_queryset(self, queryset):
         queryset = super(TaskViewSet, self).filter_queryset(queryset)
-        print(self.action)
         queryset = queryset.filter(archived=None)
         return queryset
 
