@@ -15,7 +15,7 @@ from portfolio.serializers import (PortfolioSerializer,
                                    WorkItemSerializer
                                    )
 from portfolio.permissions import CustomDjangoModelPermissions
-from portfolio.filters import PortfolioFilter, SectionFilter, CategoryFilter, WorkItemFilter
+from portfolio.filters import PortfolioFilter, SectionFilter, WorkItemFilter
 
 
 User = get_user_model()
@@ -54,11 +54,31 @@ class SectionViewSet(viewsets.ModelViewSet):
 class CategoryViewSet(viewsets.ModelViewSet):
     """Manage Sections in the database"""
 
-    authentication_classes = (TokenAuthentication, )
+    authentication_classes = (JWTAuthentication, )
     permission_classes = (IsAuthenticated, CustomDjangoModelPermissions)
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    filterset_class = CategoryFilter
+    pagination_class = CustomPageNumberPagination
+    filter_backends = [OrderingFilter, SearchFilter]
+    filter_fields = ('title', )
+    search_fields = ('title', )
+    ordering = ('title', )
+
+    def filter_queryset(self, queryset):
+        queryset = super(CategoryViewSet, self).filter_queryset(queryset)
+        queryset = queryset.filter(archived=None)
+        return queryset
+
+    def perform_create(self, serializer):
+        user_id = self.request.data['created_by']
+        user = User.objects.get(id=user_id)
+        serializer.save(created_by=user)
+
+    def destroy(self, request, *args, **kwargs):
+        category = self.get_object()
+        category.archived = timezone.now()
+        category.save()
+        return Response(data={'status': f'Category {category.id} has been archived'})
 
 
 class TaskViewSet(viewsets.ModelViewSet):

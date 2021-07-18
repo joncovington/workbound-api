@@ -53,6 +53,11 @@ class CategorySerializer(serializers.ModelSerializer):
         category = Category.objects.create(**validated_data)
         return category
 
+    def to_representation(self, instance):
+        data = super(CategorySerializer, self).to_representation(instance)
+        data['created_by'] = UserSerializer(instance=instance.created_by).data
+        return data
+
 
 class SectionSerializer(serializers.ModelSerializer):
 

@@ -1,7 +1,7 @@
 import factory
 from random import randint
 from faker import Faker
-from portfolio.models import Task
+from portfolio.models import Category, Task
 from core.factory import SuperUserFactory
 
 
@@ -24,6 +24,21 @@ class TaskFactory(factory.django.DjangoModelFactory):
     description = factory.Faker('paragraph')
     duration = factory.Faker('pyint', min_value=0, max_value=60)
     completion_days = factory.Faker('pyint', min_value=0, max_value=10)
+    created_by = factory.SubFactory(SuperUserFactory)
+
+    @classmethod
+    def _adjust_kwargs(cls, **kwargs):
+        title = kwargs['title']
+        print(title)
+        kwargs['title'] = str(title).title()
+        return kwargs
+
+class CategoryFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Category
+
+    title = factory.LazyFunction(get_title)
+    description = factory.Faker('paragraph')
     created_by = factory.SubFactory(SuperUserFactory)
 
     @classmethod
