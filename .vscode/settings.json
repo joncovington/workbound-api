@@ -10,5 +10,6 @@
         "./app"
     ],
     "python.linting.pylintEnabled": false,
+    "liveServer.settings.port": 5501,
     // "python.analysis.useImportHeuristic": true
 }   

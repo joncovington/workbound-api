@@ -16,11 +16,9 @@ from portfolio.serializers import SectionSerializer, CategorySerializer
 
 User = get_user_model()
 
-NO_PERMISSION = {
-    'detail': 'You do not have permission to perform this action.'
-}
-SECTION_URL = reverse('portfolio:section-list')
-SECTIONCATEGORY_URL = reverse('portfolio:category-list')
+NO_PERMISSION = {"detail": "You do not have permission to perform this action."}
+SECTION_URL = reverse("portfolio:section-list")
+SECTIONCATEGORY_URL = reverse("portfolio:category-list")
 
 
 def _sample_user():
@@ -29,9 +27,9 @@ def _sample_user():
 
 def _get_user(**kwargs):
     """Return user from dict if present or return sample user"""
-    user = kwargs['user'] if 'user' in kwargs else _sample_user()
+    user = kwargs["user"] if "user" in kwargs else _sample_user()
     if not isinstance(user, User):
-        raise ValueError(_('User must be an instance of AUTH_USER_MODEL'))
+        raise ValueError(_("User must be an instance of AUTH_USER_MODEL"))
     return user
 
 
@@ -39,11 +37,7 @@ def sample_category(*args, **kwargs):
     """Returns a sample Category object for testing"""
     user = _get_user(**kwargs)
 
-    return Category.objects.create(
-        title=sample_id(),
-        description='',
-        created_by=user
-    )
+    return Category.objects.create(title=sample_id(), description="", created_by=user)
 
 
 def sample_section(*args, **kwargs):
@@ -51,9 +45,7 @@ def sample_section(*args, **kwargs):
     user = _get_user(**kwargs)
 
     return Section.objects.create(
-        portfolio=sample_portfolio(),
-        category=sample_category(),
-        created_by=user
+        portfolio=sample_portfolio(), category=sample_category(), created_by=user
     )
 
 
@@ -78,7 +70,7 @@ class PrivateSectionApiTests(TestCase):
         self.user = _sample_user()
         self.client.force_authenticate(user=self.user)
 
-# Category Tests
+    # Category Tests
 
     def test_retrieve_category_with_permission(self):
         """Test retrieving sections with correct permissions"""
@@ -86,7 +78,7 @@ class PrivateSectionApiTests(TestCase):
         categories = [sample_category() for i in range(2)]
 
         # add view permission for category
-        permission = Permission.objects.get(name='Can view Category')
+        permission = Permission.objects.get(name="Can view Category")
         self.user.user_permissions.add(permission)
 
         res = self.client.get(SECTIONCATEGORY_URL)
@@ -95,8 +87,8 @@ class PrivateSectionApiTests(TestCase):
         serializer = CategorySerializer(sectioncat_qs, many=True)
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data['results'], serializer.data)
-        self.assertEqual(len(res.data['results']), len(sectioncat_qs))
+        self.assertEqual(res.data["results"], serializer.data)
+        self.assertEqual(len(res.data["results"]), len(sectioncat_qs))
         self.assertTrue(len(categories))
 
     def test_retrieve_category_without_permissions(self):
@@ -112,33 +104,33 @@ class PrivateSectionApiTests(TestCase):
 
     def test_create_category_successful(self):
         """Test creating new category successful"""
-        payload = {'title': 'new_category', 'description': 'blah blah blah'}
+        payload = {
+            "title": "new_category",
+            "description": "blah blah blah",
+            "created_by": self.user.id,
+        }
 
-        permission = Permission.objects.get(name='Can add Category')
+        permission = Permission.objects.get(name="Can add Category")
         self.user.user_permissions.add(permission)
 
         self.client.post(SECTIONCATEGORY_URL, payload)
-        exists = Category.objects.filter(
-            title=payload['title']
-        ).exists()
+        exists = Category.objects.filter(title=payload["title"]).exists()
 
         self.assertTrue(exists)
 
     def test_create_category_without_permission_fails(self):
         """Test creating new category without permissions fails"""
-        payload = {'title': 'new_category', 'description': 'blah blah blah'}
+        payload = {"title": "new_category", "description": "blah blah blah"}
 
         res = self.client.post(SECTIONCATEGORY_URL, payload)
 
-        exists = Category.objects.filter(
-            title=payload['title']
-        ).exists()
+        exists = Category.objects.filter(title=payload["title"]).exists()
 
         self.assertFalse(exists)
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(res.data, NO_PERMISSION)
 
-# Section tests
+    # Section tests
 
     def test_retrieve_sections_with_permission(self):
         """Test retrieving sections with correct permissions"""
@@ -146,7 +138,7 @@ class PrivateSectionApiTests(TestCase):
         sections = [sample_section() for i in range(2)]
 
         # add view permission for sections
-        permission = Permission.objects.get(name='Can view Section')
+        permission = Permission.objects.get(name="Can view Section")
         self.user.user_permissions.add(permission)
 
         res = self.client.get(SECTION_URL)
@@ -155,8 +147,8 @@ class PrivateSectionApiTests(TestCase):
         serializer = SectionSerializer(section_qs, many=True)
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data['results'], serializer.data)
-        self.assertEqual(len(res.data['results']), len(section_qs))
+        self.assertEqual(res.data["results"], serializer.data)
+        self.assertEqual(len(res.data["results"]), len(section_qs))
         self.assertTrue(len(sections))
 
     def test_retrieve_section_without_permissions(self):
@@ -174,17 +166,19 @@ class PrivateSectionApiTests(TestCase):
         """Test creating new section successful"""
         portfolio = sample_portfolio()
         category = sample_category()
-        payload = {'portfolio': portfolio.id, 'category': category.id, 'created_by': self.user.id}
+        payload = {
+            "portfolio": portfolio.id,
+            "category": category.id,
+            "created_by": self.user.id,
+        }
 
-        permission = Permission.objects.get(name='Can add Section')
+        permission = Permission.objects.get(name="Can add Section")
         self.user.user_permissions.add(permission)
 
         res = self.client.post(SECTION_URL, payload)
 
         exists = Section.objects.filter(
-            portfolio=portfolio,
-            category=category,
-            created_by=self.user
+            portfolio=portfolio, category=category, created_by=self.user
         ).exists()
 
         self.assertTrue(exists)
@@ -194,14 +188,16 @@ class PrivateSectionApiTests(TestCase):
         """Test creating new section without pemission fails"""
         portfolio = sample_portfolio()
         category = sample_category()
-        payload = {'portfolio': portfolio.id, 'category': category.id, 'created_by': self.user.id}
+        payload = {
+            "portfolio": portfolio.id,
+            "category": category.id,
+            "created_by": self.user.id,
+        }
 
         res = self.client.post(SECTION_URL, payload)
 
         exists = Section.objects.filter(
-            portfolio=portfolio,
-            category=category,
-            created_by=self.user
+            portfolio=portfolio, category=category, created_by=self.user
         ).exists()
 
         self.assertFalse(exists)

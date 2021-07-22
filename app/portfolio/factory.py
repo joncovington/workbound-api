@@ -33,6 +33,7 @@ class TaskFactory(factory.django.DjangoModelFactory):
         kwargs['title'] = str(title).title()
         return kwargs
 
+
 class CategoryFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Category
