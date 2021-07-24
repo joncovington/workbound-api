@@ -51,7 +51,7 @@ class RoleSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         representation = super(RoleSerializer, self).to_representation(instance)
-        representation['user'] = instance.user.email
+        representation['user'] = UserSerializer(instance=instance.user).data
         representation['category'] = str(instance.category)
         representation['role_type'] = str(instance.role_type)
         return representation

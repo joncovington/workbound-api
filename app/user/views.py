@@ -8,6 +8,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.exceptions import ValidationError
+from user.filters import RoleFilter
 from user.models import Role
 
 from user.serializers import ProfileSerializer, UserSerializer, RoleSerializer
@@ -116,10 +117,11 @@ class RoleViewSet(viewsets.GenericViewSet,
                   mixins.CreateModelMixin,
                   ):
     """Manage Roles in the database"""
-    authentication_classes = (TokenAuthentication, )
+    authentication_classes = (JWTAuthentication, )
     permission_classes = (permissions.IsAuthenticated, RolePermission)
     queryset = Role.objects.all()
     serializer_class = RoleSerializer
+    filterset_class = RoleFilter
 
 
 class RoleUserListView(generics.ListAPIView):
