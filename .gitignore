@@ -130,4 +130,4 @@ dmypy.json
 
 app/media/*
 
-firebase-auth.json
+firebase_credentials.json
