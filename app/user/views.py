@@ -1,13 +1,11 @@
 from django.contrib.auth.models import Permission
 from rest_framework import generics, permissions, viewsets, mixins, status
-from rest_framework.views import APIView
-from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.exceptions import ValidationError
+from auth.authentication import FirebaseAuthentication
 from user.filters import RoleFilter
 from user.models import Role
 
@@ -22,7 +20,7 @@ def get_perm_by_model_name(name, user):
 
 
 @api_view(['GET', ])
-@authentication_classes([JWTAuthentication])
+@authentication_classes([FirebaseAuthentication])
 @permission_classes([permissions.IsAuthenticated])
 def custom_user_model_permissions(request, model):
     perms = get_perm_by_model_name(name=model, user=request.user)
@@ -31,7 +29,7 @@ def custom_user_model_permissions(request, model):
 
 
 @api_view(['GET', ])
-@authentication_classes([JWTAuthentication])
+@authentication_classes([FirebaseAuthentication])
 @permission_classes([permissions.IsAuthenticated])
 def retrieve_all_permissions(request):
     all_perms = []
@@ -59,26 +57,10 @@ class CreateUserView(generics.CreateAPIView):
     serializer_class = UserSerializer
 
 
-class BlacklistTokenView(APIView):
-    authentication_classes = []
-    permission_classes = [permissions.AllowAny]
-
-    def post(self, request):
-        print(request.data['refresh_token'])
-        try:
-            refresh_token = request.data['refresh_token']
-            token = RefreshToken(refresh_token)
-            token.blacklist()
-            return Response(data={'status': 'Logout Successful'}, status=status.HTTP_200_OK)
-        except Exception as e:
-            print(e)
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-
 class ManageUserView(generics.RetrieveUpdateAPIView):
     """Manage the authenticated user"""
     serializer_class = UserSerializer
-    authentication_classes = [JWTAuthentication]
+    authentication_classes = [FirebaseAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self):
@@ -93,7 +75,7 @@ class ManageUserView(generics.RetrieveUpdateAPIView):
 class ProfileView(generics.UpdateAPIView):
     """Manage the authenticated user"""
     serializer_class = ProfileSerializer
-    authentication_classes = [JWTAuthentication]
+    authentication_classes = [FirebaseAuthentication]
     permission_classes = [permissions.IsAuthenticated]
     parser_classes = [MultiPartParser, FormParser]
 
@@ -117,7 +99,7 @@ class RoleViewSet(viewsets.GenericViewSet,
                   mixins.CreateModelMixin,
                   ):
     """Manage Roles in the database"""
-    authentication_classes = (JWTAuthentication, )
+    authentication_classes = (FirebaseAuthentication, )
     permission_classes = (permissions.IsAuthenticated, RolePermission)
     queryset = Role.objects.all()
     serializer_class = RoleSerializer

@@ -9,7 +9,7 @@ class UserAdmin(BaseUserAdmin):
     ordering = ['id']
     list_display = ['email', ]
     fieldsets = (
-        (None, {'fields': ('email', 'password')}),
+        (None, {'fields': ('email', 'password', 'firebase_uid')}),
         (
             _('Permissions'),
             {

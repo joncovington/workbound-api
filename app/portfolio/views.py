@@ -4,9 +4,9 @@ from rest_framework import viewsets, status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.filters import OrderingFilter, SearchFilter
+from auth.authentication import FirebaseAuthentication
 from portfolio.models import Portfolio, Section, Category, Task, WorkItem
 from portfolio.serializers import (
     PortfolioSerializer,
@@ -55,7 +55,7 @@ class SectionViewSet(viewsets.ModelViewSet):
 class CategoryViewSet(viewsets.ModelViewSet):
     """Manage Sections in the database"""
 
-    authentication_classes = (JWTAuthentication,)
+    authentication_classes = (FirebaseAuthentication,)
     permission_classes = (IsAuthenticated, CustomDjangoModelPermissions)
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
@@ -85,7 +85,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
 class TaskViewSet(viewsets.ModelViewSet):
     """Manage Tasks in the database"""
 
-    authentication_classes = (JWTAuthentication,)
+    authentication_classes = (FirebaseAuthentication,)
     permission_classes = (IsAuthenticated, CustomDjangoModelPermissions)
     pagination_class = CustomPageNumberPagination
     queryset = Task.objects.all()
@@ -113,7 +113,7 @@ class TaskViewSet(viewsets.ModelViewSet):
 
 
 class AltTaskViewSet(viewsets.GenericViewSet):
-    authentication_classes = (JWTAuthentication,)
+    authentication_classes = (FirebaseAuthentication,)
     permission_classes = (IsAuthenticated, CustomDjangoModelPermissions)
     pagination_class = CustomPageNumberPagination
     filter_backends = [OrderingFilter, SearchFilter]

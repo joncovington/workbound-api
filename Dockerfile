@@ -1,18 +1,14 @@
-FROM python:3.9-alpine
+FROM python:slim
 LABEL maintainer="jon.covington@gmail.com"
 
 ENV PYTHONUNBUFFERED 1
 
+RUN apt-get update
+RUN apt-get upgrade
+RUN pip install -U pip
 COPY ./requirements.txt /requirements.txt
-RUN apk add --update --no-cache postgresql-client zlib libwebp libjpeg
-RUN apk add --update --no-cache --virtual .tmp-build-deps \
-    gcc libc-dev linux-headers postgresql-dev jpeg-dev zlib-dev
 RUN pip install -r /requirements.txt
-RUN apk del .tmp-build-deps
 
 RUN mkdir /app
 WORKDIR /app
 COPY ./app /app
-
-RUN adduser -D user
-USER user
