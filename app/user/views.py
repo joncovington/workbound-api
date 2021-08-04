@@ -1,6 +1,7 @@
+import secrets
 from django.contrib.auth.models import Permission
+from django.contrib.auth import get_user_model
 from rest_framework import generics, permissions, viewsets, mixins, status
-from rest_framework.authentication import TokenAuthentication
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
@@ -10,6 +11,10 @@ from user.filters import RoleFilter
 from user.models import Role
 
 from user.serializers import ProfileSerializer, UserSerializer, RoleSerializer
+
+from firebase_admin import auth
+
+User = get_user_model()
 
 
 def get_perm_by_model_name(name, user):
@@ -55,6 +60,37 @@ class RolePermission(permissions.BasePermission):
 class CreateUserView(generics.CreateAPIView):
     """Create a new user"""
     serializer_class = UserSerializer
+
+
+@api_view(['POST', ])
+def sync_firebase_user(request):
+    if request.method == 'POST':
+        if not request.data['token']:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            try:
+                decoded_token = auth.verify_id_token(request.data['token'])
+                email = decoded_token['email']
+                uid = decoded_token['uid']
+            except auth.UserNotFoundError:
+                return Response(data={'error': 'User Not Found'}, status=status.HTTP_401_UNAUTHORIZED)
+
+            if len(User.objects.filter(email=email)) == 0:
+                new_django_user = User.objects.create(email=email, password=secrets.token_urlsafe())
+                new_django_user.firebase_uid = uid
+                new_django_user.save()
+                serialzer = UserSerializer(instance=new_django_user).data
+                return Response(data=serialzer, status=status.HTTP_200_OK)
+            else:
+                existing_user = User.objects.get(email=email)
+                if existing_user.firebase_uid == uid:
+                    return Response(status=status.HTTP_200_OK)
+                else:
+                    existing_user.firebase_uid = uid
+                    existing_user.save()
+                    return Response(status=status.HTTP_200_OK)
+
+    return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class ManageUserView(generics.RetrieveUpdateAPIView):
@@ -110,7 +146,7 @@ class RoleUserListView(generics.ListAPIView):
     """List roles for current user"""
     serializer_class = RoleSerializer
     permission_classes = (permissions.IsAuthenticated, )
-    authentication_classes = (TokenAuthentication, )
+    authentication_classes = (FirebaseAuthentication, )
 
     def get_queryset(self):
         user = self.request.user

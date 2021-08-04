@@ -28,12 +28,12 @@ class PublicRoleApiTests(TestCase):
     def test_login_required(self):
         """Test login required to use API"""
         res = self.client.get(ROLE_URL)
-        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_login_required_my_roles(self):
         """Test login required to get request user roles"""
         res = self.client.get(USER_ROLE_URL)
-        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
 
 
 class PrivateRoleApiTests(TestCase):

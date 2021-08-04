@@ -78,7 +78,7 @@ class PublicPortfolioApiTests(TestCase):
         """Test login required to use API"""
         res = self.client.get(PORTFOLIO_URL)
 
-        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
 
 
 class PrivatePortfolioApiTests(TestCase):
@@ -110,7 +110,8 @@ class PrivatePortfolioApiTests(TestCase):
 
     def test_retrieve_portfolios_without_permission(self):
         """Test retrieving portfolios without correct permissions"""
-
+        permission = Permission.objects.get(name='Can view Portfolio')
+        self.user.user_permissions.remove(permission.id)
         portfolios = [sample_portfolio() for i in range(2)]
 
         res = self.client.get(PORTFOLIO_URL)

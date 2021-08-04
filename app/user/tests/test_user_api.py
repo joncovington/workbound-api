@@ -7,7 +7,6 @@ from rest_framework import status
 
 
 CREATE_USER_URL = reverse('user:create')
-TOKEN_URL = reverse('user:token_obtain_pair')
 ME_URL = reverse('user:me')
 
 
@@ -61,57 +60,11 @@ class PublicUserApiTests(TestCase):
         ).exists()
         self.assertFalse(user_exists)
 
-    def test_create_token_for_user(self):
-        """Test that a token is created for authenticated user"""
-        payload = {
-            'email': 'test@workbound.info',
-            'password': 'testpass123'
-        }
-        create_user(**payload)
-        res = self.client.post(TOKEN_URL, payload)
-
-        self.assertIn('access', res.data)
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-
-    def test_create_token_invalid_credentials(self):
-        """Test that a token is not created with invalid credentials"""
-        create_user(email='test@workbound.info', password='testpass123')
-        payload = {
-            'email': 'test@workbound.info',
-            'password': 'incorrectpass'
-        }
-        res = self.client.post(TOKEN_URL, payload)
-
-        self.assertNotIn('token', res.data)
-        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
-
-    def test_create_token_no_user(self):
-        """Test that a token is not created for a user that doesn't exist"""
-        payload = {
-            'email': 'test@workbound.info',
-            'password': 'user|doesnt!exist',
-        }
-        res = self.client.post(TOKEN_URL, payload)
-
-        self.assertNotIn('access', res.data)
-        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
-
-    def test_create_token_missing_field(self):
-        """Test that email and password are required"""
-        create_user(email='test@workbound.info', password='testpass123')
-        payload = {
-            'email': 'test@workbound.info',
-        }
-        res = self.client.post(TOKEN_URL, payload)
-
-        self.assertNotIn('access', res.data)
-        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-
     def test_retrieve_user_unauthorized(self):
         """Test that authentication is required for users"""
         res = self.client.get(ME_URL)
 
-        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
 
 
 class PrivateUserApiTests(TestCase):

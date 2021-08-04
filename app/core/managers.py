@@ -1,7 +1,5 @@
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import BaseUserManager
-from firebase_admin.exceptions import AlreadyExistsError
-import firebase_admin.auth as auth
 
 
 class CustomUserManager(BaseUserManager):
@@ -12,16 +10,11 @@ class CustomUserManager(BaseUserManager):
 
     def create_user(self, email, password=None, **extra_fields):
         """Create and save a User with the given email and password."""
-
         if not email:
             raise ValueError(_('The Email must be set'))
 
         email = self.normalize_email(email)
-        try:
-            firebase_user = auth.create_user(email=email, password=password)
-        except AlreadyExistsError:
-            print('This email already exists')
-        user = self.model(email=email, firebase_uid=firebase_user.uid, **extra_fields)
+        user = self.model(email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
         return user

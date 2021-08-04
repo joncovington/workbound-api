@@ -9,6 +9,7 @@ router.register('roles', views.RoleViewSet)
 
 urlpatterns = [
     path('create/', views.CreateUserView.as_view(), name='create'),
+    path('sync/', views.sync_firebase_user, name='sync'),
     path('me/', views.ManageUserView.as_view(), name='me'),
     path('me/update/', views.ProfileView.as_view(), name='profile'),
     path('perms/', views.retrieve_all_permissions, name='all_perms'),

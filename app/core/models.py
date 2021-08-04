@@ -17,7 +17,7 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
-    email = models.EmailField(_('email address'), unique=True)
+    email = models.EmailField(_("email address"), unique=True)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     date_joined = models.DateTimeField(default=timezone.now)
@@ -27,7 +27,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         verbose_name_plural = "Users"
         verbose_name = "User"
 
-    USERNAME_FIELD = 'email'
+    USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 
     objects = CustomUserManager()
@@ -37,13 +37,12 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
 
 class Profile(models.Model):
-
     def upload_image_path(instance, filename):
         # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
-        return 'user_{0}/profile_{1}'.format(instance.user.id, filename)
+        return "user_{0}/profile_{1}".format(instance.user.id, filename)
 
     def upload_thumbnail_path(instance, filename):
-        return 'user_{0}/profile_thumb_{1}'.format(instance.user.id, filename)
+        return "user_{0}/profile_thumb_{1}".format(instance.user.id, filename)
 
     def create_thumb(self):
         name = self.image.name
@@ -65,16 +64,15 @@ class Profile(models.Model):
     last_name = models.CharField(max_length=40, null=True, blank=True)
     phone = PhoneNumberField(blank=True, null=True)
     image = models.ImageField(upload_to=upload_image_path, blank=True, null=True)
-    thumbnail = models.ImageField(upload_to=upload_thumbnail_path,
-                                  editable=False,
-                                  blank=True,
-                                  null=True)
+    thumbnail = models.ImageField(
+        upload_to=upload_thumbnail_path, editable=False, blank=True, null=True
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name = _('Profile')
-        verbose_name_plural = _('Profiles')
+        verbose_name = _("Profile")
+        verbose_name_plural = _("Profiles")
 
     def __str__(self):
         return self.user.email
@@ -83,12 +81,7 @@ class Profile(models.Model):
         if self.image and self.user:
             file, name, content_type, size = self.create_thumb()
             self.thumbnail = InMemoryUploadedFile(
-                file,
-                'ImageField',
-                name,
-                content_type,
-                size,
-                None
+                file, "ImageField", name, content_type, size, None
             )
         if not self.image:
             self.thumbnail = None
@@ -103,11 +96,16 @@ def create_profile(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=CustomUser)
 def add_view_permissions(sender, instance, created, **kwargs):
-    view_permissions = ['Can view Portfolio', 'Can view Section', 'Can view Work Item', 'Can view Category', 'Can view Task', ]
+    view_permissions = [
+        "Can view Portfolio",
+        "Can view Section",
+        "Can view Work Item",
+        "Can view Category",
+        "Can view Task",
+    ]
     if created:
         if not instance.is_superuser and not instance.is_staff:
             for perm in view_permissions:
-                print('Adding perm: ', perm)
                 permission = Permission.objects.get(name=perm)
                 instance.user_permissions.add(permission)
 

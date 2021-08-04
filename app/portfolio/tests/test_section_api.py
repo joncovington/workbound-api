@@ -59,7 +59,7 @@ class PublicSectionApiTests(TestCase):
         """Test login required to use API"""
         res = self.client.get(SECTION_URL)
 
-        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
 
 
 class PrivateSectionApiTests(TestCase):
@@ -93,7 +93,8 @@ class PrivateSectionApiTests(TestCase):
 
     def test_retrieve_category_without_permissions(self):
         """Test retrieving sections without permissions"""
-
+        permission = Permission.objects.get(name='Can view Category')
+        self.user.user_permissions.remove(permission.id)
         categories = [sample_category() for i in range(2)]
 
         res = self.client.get(SECTIONCATEGORY_URL)
@@ -153,7 +154,8 @@ class PrivateSectionApiTests(TestCase):
 
     def test_retrieve_section_without_permissions(self):
         """Test retrieving sections without permissions"""
-
+        permission = Permission.objects.get(name='Can view Section')
+        self.user.user_permissions.remove(permission.id)
         sections = [sample_section() for i in range(2)]
 
         res = self.client.get(SECTION_URL)

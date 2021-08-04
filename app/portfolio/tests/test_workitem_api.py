@@ -70,7 +70,7 @@ class PublicWorkItemApiTests(TestCase):
         """Test login required to use API"""
         res = self.client.get(TASK_URL)
 
-        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
 
 
 class PrivateWorkItemApiTests(TestCase):
@@ -104,7 +104,8 @@ class PrivateWorkItemApiTests(TestCase):
 
     def test_retrieve_tasks_without_permission(self):
         """Test retrieving tasks without permissions"""
-
+        permission = Permission.objects.get(name='Can view Task')
+        self.user.user_permissions.remove(permission.id)
         tasks = [sample_task() for i in range(2)]
 
         res = self.client.get(TASK_URL)
@@ -174,7 +175,8 @@ class PrivateWorkItemApiTests(TestCase):
 
     def test_retrieve_workitem_without_permission_fails(self):
         """Test retrieving WorkItem(s) without permissions fails"""
-
+        permission = Permission.objects.get(name='Can view Work Item')
+        self.user.user_permissions.remove(permission.id)
         workitems = [sample_workitem() for i in range(2)]
 
         res = self.client.get(WORKITEM_URL)

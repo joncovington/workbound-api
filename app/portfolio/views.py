@@ -1,7 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 from rest_framework import viewsets, status
-from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
@@ -29,7 +28,7 @@ class CustomPageNumberPagination(PageNumberPagination):
 class PortfolioViewSet(viewsets.ModelViewSet):
     """Manage Portfolios in the database"""
 
-    authentication_classes = (TokenAuthentication,)
+    authentication_classes = (FirebaseAuthentication,)
     permission_classes = (IsAuthenticated, CustomDjangoModelPermissions)
     queryset = Portfolio.objects.all()
     serializer_class = PortfolioSerializer
@@ -42,7 +41,7 @@ class PortfolioViewSet(viewsets.ModelViewSet):
 class SectionViewSet(viewsets.ModelViewSet):
     """Manage Sections in the database"""
 
-    authentication_classes = (TokenAuthentication,)
+    authentication_classes = (FirebaseAuthentication,)
     permission_classes = (IsAuthenticated, CustomDjangoModelPermissions)
     queryset = Section.objects.all()
     serializer_class = SectionSerializer
@@ -132,7 +131,7 @@ class AltTaskViewSet(viewsets.GenericViewSet):
 class WorkItemViewSet(viewsets.ModelViewSet):
     """Manage WorkItems in the database"""
 
-    authentication_classes = (TokenAuthentication,)
+    authentication_classes = (FirebaseAuthentication,)
     permission_classes = (IsAuthenticated, CustomDjangoModelPermissions)
     queryset = WorkItem.objects.all()
     serializer_class = WorkItemSerializer

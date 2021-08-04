@@ -19,6 +19,7 @@ services:
             - DB_NAME=app
             - DB_USER=postgres
             - POSTGRES_PASSWORD
+            - FIREBASE_CONFIG
         depends_on: 
             - db
     
