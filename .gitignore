@@ -131,3 +131,4 @@ dmypy.json
 app/media/*
 
 app/firebase_credentials.json
+.digitalocean.key
