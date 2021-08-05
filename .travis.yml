@@ -9,3 +9,16 @@ before_script: pip install docker-compose
 
 script:
   - docker-compose run app sh -c "python manage.py wait_for_db && python manage.py test && flake8"
+
+deploy:
+  provider: elasticbeanstalk
+  region: 'us-west-2'
+  app: 'workbound-api'
+  env: 'Workboundapi-env'
+  bucket_name: 'elasticbeanstalk-us-east-1-923445559289'
+  bucket_path: 'workbound-api'
+  on:
+    branch: master
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key:
+    secure: "$AWS_SECRET_KEY"
