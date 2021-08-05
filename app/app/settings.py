@@ -108,8 +108,8 @@ WSGI_APPLICATION = "app.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-
-if 'RDS_HOSTNAME' in os.environ:
+RDS = os.getenv('RDS_HOSTNAME')
+if RDS and RDS != '':
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
