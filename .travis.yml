@@ -4,7 +4,9 @@ language: generic
 services:
   - docker
 
+
 script:
+  - curl https://raw.githubusercontent.com/joncovington/workbound-api/main/docker-compose.dev.yml > docker-compose-yml
   - docker-compose run app sh -c "python manage.py wait_for_db && python manage.py test && flake8"
 
 deploy:
