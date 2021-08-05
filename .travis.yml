@@ -18,7 +18,9 @@ deploy:
   bucket_name: 'elasticbeanstalk-us-west-2-090674468459'
   bucket_path: 'workbound-api'
   on:
-    branch: master
+    branches:
+      only: 
+        - main
   access_key_id: $AWS_ACCESS_KEY
   secret_access_key:
     secure: "$AWS_SECRET_KEY"
