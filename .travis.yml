@@ -15,7 +15,7 @@ deploy:
   region: 'us-west-2'
   app: 'workbound-api'
   env: 'Workboundapi-env'
-  bucket_name: 'elasticbeanstalk-us-east-1-923445559289'
+  bucket_name: 'elasticbeanstalk-us-west-2-090674468459'
   bucket_path: 'workbound-api'
   on:
     branch: master
