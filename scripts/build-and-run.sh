@@ -14,5 +14,6 @@ while ! ${EXEC_CMD} bash -c 'nc -z "db" "5432"'; do
 done
 echo Database ready!
 
-
+${EXEC_CMD} python manage.py wait_for_db &&
+${EXEC_CMD} python manage.py migrate --noinput &&
 ${EXEC_CMD} python manage.py test

@@ -12,8 +12,6 @@ jobs:
       name: Build and Test
       script:
         - scripts/build-and-run.sh
-      after_success: 
-        - docker-compose -f docker-compose.yml up --abort-on-container-exit
 
 
 # deploy:
