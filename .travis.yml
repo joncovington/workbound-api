@@ -1,14 +1,17 @@
-language: python
-python:
-  - "3.9"
+language: generic
 
 services:
   - docker
 
-before_script: pip install docker-compose
+jobs:
+  include:
+    - stage: build-and-test
+      name: Build and Test
+      script:
+        - scripts/build-and-run.sh
+      after_success: 
+        - docker-compose -f docker-compose.yml up --abort-on-container-exit
 
-script:
-  - docker-compose run app sh -c "python manage.py wait_for_db && python manage.py test && flake8"
 
 # deploy:
 #   provider: elasticbeanstalk
