@@ -4,15 +4,11 @@ services:
   - docker'
 
 before_install:
-  - chmod a+x scripts/build-and-run.sh
+  - docker-compose up -d --build
 
-jobs:
-  include:
-    - stage: build-and-test
-      name: Build and Test
-      script:
-        - scripts/build-and-run.sh
-
+script:
+  - docker-compose exec app python manage.py test
+  - docker-compose exec app flake8
 
 # deploy:
 #   provider: elasticbeanstalk
