@@ -1,7 +1,10 @@
 language: generic
 
 services:
-  - docker
+  - docker'
+
+before_install:
+  - chmod a+x scripts/build-and-run.sh
 
 jobs:
   include:
