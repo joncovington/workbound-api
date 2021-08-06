@@ -18,7 +18,7 @@ RUN mkdir /app/static
 WORKDIR /app
 
 ADD entrypoint-prod.sh /entrypoint-prod.sh
-# RUN chown appuser:appuser /entrypoint-prod.sh
+RUN chown a+x /entrypoint-prod.sh
 
 COPY ./app .
 
