@@ -7,8 +7,12 @@ before_install:
   - docker-compose up -d --build
 
 script:
+  - docker-compose exec app python manage.py wait_for_db
   - docker-compose exec app python manage.py test
   - docker-compose exec app flake8
+
+after_script:
+  - docker-compose down
 
 # deploy:
 #   provider: elasticbeanstalk
