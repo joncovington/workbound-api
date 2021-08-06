@@ -1,42 +1,26 @@
-###########
-# BUILDER #
-###########
-
 FROM python:slim
-LABEL maintainer="jon.covington@gmail.com"
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
-
-WORKDIR /usr/src/app
 
 RUN apt-get update
 RUN apt-get upgrade
 RUN pip install -U pip
 COPY ./requirements.txt .
-RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r requirements.txt
+RUN pip install -r requirements.txt
 
-COPY ./app .
+# RUN groupadd -r appuser
+# RUN useradd -s /bin/bash -g appuser -u 1001 appuser
 
-#########
-# FINAL #
-#########
 
-FROM python:slim
-
-RUN mkdir -p /home/app
-
-WORKDIR /home/app
-
-RUN apt-get update
-RUN apt-get upgrade
-
-COPY --from=0 /usr/src/app/wheels /wheels
-COPY --from=0 /usr/src/app/requirements.txt .
-RUN pip install --no-cache /wheels/*
-
-COPY ./app .
+RUN mkdir /app
+RUN mkdir /app/static
+WORKDIR /app
 
 ADD entrypoint-prod.sh /entrypoint-prod.sh
-RUN chmod a+x /entrypoint-prod.sh
+# RUN chown appuser:appuser /entrypoint-prod.sh
+
+COPY ./app .
+
+# USER appuser
 ENTRYPOINT ["/entrypoint-prod.sh"]

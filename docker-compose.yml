@@ -5,20 +5,21 @@ services:
         build: ./nginx
         restart: always
         ports:
-          - 80:80
+            - 80:80
         depends_on:
-          - app
+            - app
+        volumes:
+            - ./app/static:/app/static
     app:
         build: 
             context: .
         ports:
             - "8000:8000"
         volumes: 
+            - ./app/static:/app/static
             - ./app:/app
         command: >
-            sh -c "python manage.py makemigrations &&
-                    python manage.py migrate &&
-                    gunicorn app.wsgi:application --bind 0.0.0.0:8000"
+            sh -c "gunicorn app.wsgi:application --bind 0.0.0.0:8000"
         environment: 
             - SECRET_KEY
             - DB_HOST=db
@@ -26,6 +27,8 @@ services:
             - DB_USER=postgres
             - POSTGRES_PASSWORD
             - FIREBASE_CONFIG
+            - DJANGO_SUPERUSER_EMAIL
+            - DJANGO_SUPERUSER_PASSWORD
         depends_on: 
             - db
     db:

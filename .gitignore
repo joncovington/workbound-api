@@ -132,3 +132,6 @@ app/media/*
 
 app/firebase_credentials.json
 .digitalocean.key
+
+static/rest-framework
+static/admin
