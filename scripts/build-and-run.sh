@@ -15,5 +15,5 @@ done
 echo Database ready!
 
 ${EXEC_CMD} python manage.py wait_for_db &&
-${EXEC_CMD} python manage.py migrate --noinput &&
+${EXEC_CMD} python manage.py migrate --no-input &&
 ${EXEC_CMD} python manage.py test
