@@ -136,3 +136,4 @@ app/firebase_credentials.json
 
 static/rest-framework
 static/admin
+app/.env.prod
