@@ -5,6 +5,8 @@ ENV PYTHONUNBUFFERED 1
 
 RUN apt-get update
 RUN apt-get upgrade
+RUN apt-get install -y --no-install-recommends \
+    netcat
 RUN pip install -U pip
 COPY ./requirements.txt .
 RUN pip install -r requirements.txt
