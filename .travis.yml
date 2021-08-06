@@ -3,13 +3,8 @@ language: generic
 services:
   - docker'
 
-before_install:
-  - docker-compose up -d --build
-
 script:
-  - docker-compose exec app python manage.py wait_for_db
-  - docker-compose exec app python manage.py test
-  - docker-compose exec app flake8
+  - docker-compose run --entrypoint="python manage.py test" app
 
 after_script:
   - docker-compose down
