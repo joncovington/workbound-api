@@ -7,8 +7,12 @@ script:
   - docker-compose run --entrypoint="python manage.py test" app
 
 after_script:
-  - docker-compose down
-
+  - docker build -t joncovington801/workbound-api-app .
+  - docker build -t joncovington801/workbound-api-nginx ./nginx
+  # Log in to docker CLI
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  - docker push joncovington801/workbound-api-app
+  - docker push joncovington801/workbound-api-nginx
 # deploy:
 #   provider: elasticbeanstalk
 #   region: 'us-west-2'
