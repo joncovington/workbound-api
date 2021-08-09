@@ -136,3 +136,8 @@ app/firebase_credentials.json
 
 
 app/.env.prod
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml

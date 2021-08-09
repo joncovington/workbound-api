@@ -16,6 +16,7 @@ services:
         volumes: 
             - ./app/static:/app/static
             - ./app:/app
+        command: sh -c /entrypoint-prod.sh
         environment: 
             - SECRET_KEY
             - DB_HOST=db
