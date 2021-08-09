@@ -9,10 +9,12 @@ script:
 after_script:
   - docker build -t joncovington801/workbound-api-app .
   - docker build -t joncovington801/workbound-api-nginx ./nginx
+  - docker build -t joncovington801/workbound-api-db ./db
   # Log in to docker CLI
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
   - docker push joncovington801/workbound-api-app
   - docker push joncovington801/workbound-api-nginx
+  - docker push joncovington801/workbound-api-db
 # deploy:
 #   provider: elasticbeanstalk
 #   region: 'us-west-2'
