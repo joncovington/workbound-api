@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 import os
-import json
 import firebase_admin
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -192,5 +191,18 @@ MEDIA_URL = "/media/"
 
 # firebase settings
 
-cred = firebase_admin.credentials.Certificate(cert=json.loads(os.getenv('FIREBASE_CONFIG')))
+FIREBASE_CONFIG = { 
+    "type": "service_account",
+    "project_id": os.getenv("FIREBASE_PROJECT_ID"),
+    "private_key_id": os.getenv('FIREBASE_PRIVATE_KEY_ID'),
+    "private_key": os.getenv('FIREBASE_PRIVATE_KEY').replace('\\n', '\n'),
+    "client_id": os.getenv('FIREBASE_CLIENT_ID'),
+    "client_email": "firebase-adminsdk-2a8d7@workbound-api-a432e.iam.gserviceaccount.com",
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://oauth2.googleapis.com/token",
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-2a8d7%40workbound-api-a432e/iam.gserviceaccount.com"
+    }
+
+cred = firebase_admin.credentials.Certificate(cert=FIREBASE_CONFIG)
 firebase_admin.initialize_app(cred)

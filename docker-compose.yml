@@ -1,4 +1,4 @@
-version: "3"
+version: "3.9"
 
 services:
     nginx:
@@ -16,14 +16,16 @@ services:
         volumes: 
             - ./app/static:/app/static
             - ./app:/app
-        command: sh -c /entrypoint-prod.sh
         environment: 
             - SECRET_KEY
             - DB_HOST=db
             - DB_NAME=app
             - DB_USER=postgres
             - POSTGRES_PASSWORD
-            - FIREBASE_CONFIG
+            - FIREBASE_PROJECT_ID
+            - FIREBASE_PRIVATE_KEY_ID
+            - FIREBASE_PRIVATE_KEY
+            - FIREBASE_CLIENT_ID
             - DJANGO_SUPERUSER_EMAIL
             - DJANGO_SUPERUSER_PASSWORD
         depends_on: 
