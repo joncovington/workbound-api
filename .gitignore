@@ -130,10 +130,9 @@ dmypy.json
 .pyre/
 
 app/media/*
-
+app/static/*
 app/firebase_credentials.json
 .digitalocean.key
 
-static/rest-framework
-static/admin
+
 app/.env.prod
