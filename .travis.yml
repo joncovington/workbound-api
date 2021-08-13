@@ -15,14 +15,4 @@ after_script:
   - docker push joncovington801/workbound-api-app
   - docker push joncovington801/workbound-api-nginx
   - docker push joncovington801/workbound-api-db
-# deploy:
-#   provider: elasticbeanstalk
-#   region: 'us-west-2'
-#   app: 'workbound-api'
-#   env: 'Workboundapi-env'
-#   bucket_name: 'elasticbeanstalk-us-west-2-090674468459'
-#   bucket_path: 'workbound-api'
-#   on:
-#     branch: main
-#   access_key_id: $AWS_ACCESS_KEY
-#   secret_access_key: $AWS_SECRET_KEY
+
