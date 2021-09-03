@@ -1,21 +1,31 @@
 version: "3.3"
 
 services:
-    # nginx:
-    #     build: ./nginx
-    #     restart: always
-    #     ports:
-    #         - 8000:8000
-    #     depends_on:
-    #         - app
-    #     volumes:
-    #         - ./app/static:/app/static
+    nginx:
+        build: ./nginx
+        restart: always
+        ports:
+            - 8000:8000
+        depends_on:
+            - app
+        volumes:
+            - ./app/static:/app/static
+            - ./app/media:/app/media
     app:
         build: 
             context: .
-        ports:
-            - 8000:8000
+            dockerfile: Dockerfile.dev
+        command: bash -c "
+            python manage.py wait_for_db &&
+            python manage.py migrate --noinput &&
+            python manage.py collectstatic --noinput &&
+            python manage.py init_admin &&
+            gunicorn app.wsgi:application --bind 0.0.0.0:8000"
+            # python manage.py runserver 0.0.0.0:8000"
+        # ports:
+        #     - 8000:8000
         volumes: 
+            - ./app/media:/app/media
             - ./app/static:/app/static
             - ./app:/app
         environment: 

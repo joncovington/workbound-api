@@ -26,9 +26,6 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(os.getenv('DEBUG'))
 
-ALLOWED_HOSTS = ['*']
-
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -74,6 +71,7 @@ REST_FRAMEWORK = {
         "auth.authentication.FirebaseAuthentication"
         # 'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
+    # "EXCEPTION_HANDLER": "app.utils.handlers.custom_exception_handler"
 }
 
 AUTHENTICATION_BACKENDS = [
@@ -175,12 +173,6 @@ STATIC_URL = "/static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:8000",
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-]
-
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 STATIC_URL = "/static/"
 
@@ -191,7 +183,7 @@ MEDIA_URL = "/media/"
 
 # firebase settings
 
-FIREBASE_CONFIG = { 
+FIREBASE_CONFIG = {
     "type": "service_account",
     "project_id": os.getenv("FIREBASE_PROJECT_ID"),
     "private_key_id": os.getenv('FIREBASE_PRIVATE_KEY_ID'),
@@ -206,3 +198,9 @@ FIREBASE_CONFIG = {
 
 cred = firebase_admin.credentials.Certificate(cert=FIREBASE_CONFIG)
 firebase_admin.initialize_app(cred)
+
+
+ALLOWED_HOSTS = ['*']
+CORS_ALLOW_ALL_ORIGINS = True
+
+RECAPTCHA_SECRET_KEY = os.getenv('RECAPTCHA_SECRET_KEY')

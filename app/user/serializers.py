@@ -1,8 +1,23 @@
 from django.contrib.auth import get_user_model
+from django.utils.encoding import force_text
 from rest_framework import serializers
+from rest_framework.exceptions import APIException, ValidationError
+from firebase_admin import auth
 
 from core.models import Profile
 from user.models import Role
+
+
+class UserExistsException(APIException):
+    status_code = 409
+    default_detail = 'User already exists'
+    default_code = 'resource_conflict'
+
+    def __init__(self, detail):
+        if detail is not None:
+            self.detail = {'detail': [force_text(detail)]}
+        else:
+            self.detail = {"detail": force_text(self.default_detail)}
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -28,7 +43,22 @@ class UserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """Create new user with encrypted password and return it"""
-        return get_user_model().objects.create_user(**validated_data)
+        print(validated_data)
+        try:
+            firebase_user = auth.create_user(**validated_data)
+            firebase_uid = firebase_user.uid
+
+        except auth.EmailAlreadyExistsError:
+            raise UserExistsException()
+
+        try:
+            user = get_user_model().objects.create_user(**validated_data)
+        except ValidationError:
+            raise UserExistsException()
+
+        user.firebase_uid = firebase_uid
+        user.save()
+        return user
 
     def update(self, instance, validated_data):
         """Update user saving password correctly and return user"""
