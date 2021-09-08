@@ -41,6 +41,10 @@ services:
             - DJANGO_SUPERUSER_EMAIL
             - DJANGO_SUPERUSER_PASSWORD
             - RECAPTCHA_SECRET_KEY
+            - SMTP_USERNAME
+            - SMTP_PASSWORD
+            - SMTP_PORT
+            - SMTP_HOST
         depends_on: 
             - db
     db:

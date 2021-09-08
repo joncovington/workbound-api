@@ -51,9 +51,6 @@ def retrieve_all_permissions(request):
 def verify_recaptcha(request):
     """Custom view to validate recaptchaV2 token"""
     token = request.data['recaptcha']
-    print(token)
-    print(settings.RECAPTCHA_SECRET_KEY)
-    print(request.META.get('HTTP_X_FORWARDED_FOR'))
     recaptcha_url = 'https://www.google.com/recaptcha/api/siteverify'
     payload = {
         'secret': settings.RECAPTCHA_SECRET_KEY,
