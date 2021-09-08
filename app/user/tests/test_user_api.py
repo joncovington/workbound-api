@@ -5,6 +5,8 @@ from django.urls import reverse
 from rest_framework.test import APIClient
 from rest_framework import status
 
+from firebase_admin import auth
+
 
 CREATE_USER_URL = reverse('user:create')
 ME_URL = reverse('user:me')
@@ -32,7 +34,10 @@ class PublicUserApiTests(TestCase):
 
         user = get_user_model().objects.get(id=res.data['id'])
         self.assertTrue(user.check_password(payload['password']))
-        # self.assertNotIn('password', res.data)
+        self.assertNotIn('password', res.data)
+
+        firebase_user = auth.get_user_by_email(user.email)
+        auth.delete_user(firebase_user.uid)
 
     def test_user_exists(self):
         """Test creating a user that already exists fails"""
