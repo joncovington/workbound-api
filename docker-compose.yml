@@ -1,18 +1,20 @@
 version: "3.3"
 
 services:
-    nginx:
-        build: ./nginx
-        restart: always
-        ports:
-            - 80:80
-        depends_on:
-            - app
-        volumes:
-            - ./app/static:/app/static
+    # nginx:
+    #     build: ./nginx
+    #     restart: always
+    #     ports:
+    #         - 8000:8000
+    #     depends_on:
+    #         - app
+    #     volumes:
+    #         - ./app/static:/app/static
     app:
         build: 
             context: .
+        ports:
+            - 8000:8000
         volumes: 
             - ./app/static:/app/static
             - ./app:/app
@@ -28,6 +30,7 @@ services:
             - FIREBASE_CLIENT_ID
             - DJANGO_SUPERUSER_EMAIL
             - DJANGO_SUPERUSER_PASSWORD
+            - RECAPTCHA_SECRET_KEY
         depends_on: 
             - db
     db:

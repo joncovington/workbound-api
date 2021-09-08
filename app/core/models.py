@@ -113,3 +113,6 @@ def add_view_permissions(sender, instance, created, **kwargs):
 @receiver(post_save, sender=CustomUser)
 def save_profile(sender, instance, **kwargs):
     instance.profile.save()
+
+
+

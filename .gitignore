@@ -136,6 +136,7 @@ app/firebase_credentials.json
 
 
 app/.env.prod
+app/.env.dev
 
 # Elastic Beanstalk Files
 .elasticbeanstalk/*

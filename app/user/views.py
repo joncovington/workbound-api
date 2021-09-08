@@ -1,6 +1,8 @@
 import secrets
+import requests
 from django.contrib.auth.models import Permission
 from django.contrib.auth import get_user_model
+from django.conf import settings
 from rest_framework import generics, permissions, viewsets, mixins, status
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
@@ -45,6 +47,29 @@ def retrieve_all_permissions(request):
     return Response(status=status.HTTP_200_OK, data=all_perms)
 
 
+@api_view(['POST', ])
+def verify_recaptcha(request):
+    """Custom view to validate recaptchaV2 token"""
+    token = request.data['recaptcha']
+    recaptcha_url = 'https://www.google.com/recaptcha/api/siteverify'
+    payload = {
+        'secret': settings.RECAPTCHA_SECRET_KEY,
+        'response': token,
+        # 'remoteip': request.META.get('HTTP_X_FORWARDED_FOR'),
+        'remoteip': 'localhost'
+    }
+    try:
+        response = requests.post(url=recaptcha_url, data=payload)
+        result = response.json()
+        success = result.get('success', False)
+        if success:
+            return Response(status=status.HTTP_200_OK, data={'detail': 'reCaptcha verified'})
+    except requests.exceptions.RequestException as err:
+        print('recaptcha fail')
+        return Response(status=status.HTTP_403_FORBIDDEN, data={'errors': err})
+    return Response(status=status.HTTP_403_FORBIDDEN)
+
+
 class RolePermission(permissions.BasePermission):
     def has_permission(self, request, view):
         if request.method == 'GET':
@@ -64,6 +89,9 @@ class CreateUserView(generics.CreateAPIView):
 
 @api_view(['POST', ])
 def sync_firebase_user(request):
+    """Custom view to sync a firebase user to our user table"""
+    print('Syncing firebase_user')
+    print(request.data)
     if request.method == 'POST':
         if not request.data['token']:
             return Response(status=status.HTTP_400_BAD_REQUEST)
